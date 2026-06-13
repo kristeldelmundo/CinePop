@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-space-mono: 'Space Mono', monospace;
+
+  --rose: #f43f72;
+  --plum: #a855f7;
+  --blush: #ffd6e0;
+  --cream: #fff8f9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: #1a0a12;
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #fecdd6; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #f43f72; }
+
+/* Film grain texture overlay */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.4;
+}
+
+/* Glassmorphism card */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #f43f72, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Poster shimmer loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #fecdd6 25%, #fff1f4 50%, #fecdd6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Spin animation for randomizer */
+@keyframes roulette {
+  0%   { transform: rotateY(0deg) scale(1); }
+  25%  { transform: rotateY(90deg) scale(0.9); }
+  50%  { transform: rotateY(180deg) scale(0.8); }
+  75%  { transform: rotateY(270deg) scale(0.9); }
+  100% { transform: rotateY(360deg) scale(1); }
+}
+
+.roulette {
+  animation: roulette 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Star rating hover */
+.star-group:hover .star,
+.star-group .star:hover ~ .star {
+  color: #fde68a;
+}
+
+.star-group .star:hover {
+  color: #f59e0b;
+  transform: scale(1.2);
+}
+
+/* Pill tag */
+.pill-movie {
+  background: linear-gradient(135deg, #fce7f3, #fdf2f8);
+  color: #be185d;
+  border: 1px solid #fbcfe8;
+}
+
+.pill-tv {
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+}

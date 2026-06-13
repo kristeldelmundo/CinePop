@@ -1,0 +1,60 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-playfair)', 'Georgia', 'serif'],
+        mono: ['var(--font-space-mono)', 'monospace'],
+      },
+      colors: {
+        rose: {
+          50: '#fff1f4',
+          100: '#ffe4ea',
+          200: '#fecdd6',
+          300: '#fda4b4',
+          400: '#fb7093',
+          500: '#f43f72',
+          600: '#e11d54',
+          700: '#be1246',
+          800: '#9f1240',
+          900: '#88133b',
+          950: '#4c0520',
+        },
+        plum: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+        },
+      },
+      backgroundImage: {
+        'gradient-couple': 'linear-gradient(135deg, #fff1f4 0%, #faf5ff 50%, #f0f9ff 100%)',
+      },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+        'bounce-slow': 'bounce 2s infinite',
+        'fade-in': 'fadeIn 0.4s ease-out',
+        'slide-up': 'slideUp 0.4s ease-out',
+        'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      },
+      keyframes: {
+        fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+        slideUp: { from: { opacity: '0', transform: 'translateY(16px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        pop: { '0%': { transform: 'scale(0.8)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+      },
+    },
+  },
+  plugins: [],
+}
