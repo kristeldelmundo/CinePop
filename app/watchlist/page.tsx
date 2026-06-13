@@ -12,13 +12,30 @@ import { clsx } from "clsx";
 
 type FilterType = "all" | "movie" | "tv" | "Kristel" | "Eric" | "unwatched";
 
+const SUBTITLES = [
+  "ready to pop",
+  "movie nights waiting",
+  "picks in the queue",
+  "ready for showtime",
+  "waiting for the couch",
+];
+
 export default function WatchlistPage() {
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>("all");
+  const [subtitleIdx, setSubtitleIdx] = useState(0);
 
   useEffect(() => {
     loadItems();
+  }, []);
+
+  // Rotate the fun subtitle every few seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSubtitleIdx((i) => (i + 1) % SUBTITLES.length);
+    }, 3000);
+    return () => clearInterval(timer);
   }, []);
 
   async function loadItems() {
@@ -85,6 +102,7 @@ export default function WatchlistPage() {
 
   const movies = filtered.filter((i) => i.type === "movie");
   const tvShows = filtered.filter((i) => i.type === "tv");
+  const toWatchCount = items.filter((i) => !i.watched).length;
 
   const filters: { value: FilterType; label: string }[] = [
     { value: "all", label: "All" },
@@ -100,11 +118,13 @@ export default function WatchlistPage() {
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <h1 className="font-display text-3xl font-bold text-gray-800 mb-1">
-            Our <span className="gradient-text italic">Watchlist</span>
+          <h1 className="font-display text-4xl font-bold text-gray-800 mb-1">
+            What&apos;s <span className="gradient-text italic">Popping?</span>{" "}
+            <span className="inline-block animate-bounce-slow">🍿</span>
           </h1>
-          <p className="text-sm text-gray-400">
-            {items.filter((i) => !i.watched).length} titles to watch
+          <p className="text-sm text-gray-400 transition-all duration-500">
+            <span className="font-medium text-rose-400">{toWatchCount}</span>{" "}
+            {SUBTITLES[subtitleIdx]}
           </p>
         </div>
 
