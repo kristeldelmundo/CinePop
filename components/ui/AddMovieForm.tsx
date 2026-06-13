@@ -12,7 +12,7 @@ interface Props {
 export default function AddMovieForm({ onAdd }: Props) {
   const [title, setTitle] = useState('')
   const [type, setType] = useState<MediaType>('movie')
-  const [who, setWho] = useState<WatchlistUser>('K')
+  const [who, setWho] = useState<WatchlistUser>('Kristel')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -28,7 +28,7 @@ export default function AddMovieForm({ onAdd }: Props) {
     <form onSubmit={handleSubmit} className="glass rounded-2xl p-4 mb-6">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-sm font-medium text-gray-600">Adding as:</span>
-        {(['K', 'J'] as WatchlistUser[]).map(u => (
+        {(['Kristel', 'Eric'] as WatchlistUser[]).map(u => (
           <button
             key={u}
             type="button"
@@ -36,7 +36,7 @@ export default function AddMovieForm({ onAdd }: Props) {
             className={clsx(
               'w-8 h-8 rounded-full text-sm font-semibold transition-all',
               who === u
-                ? u === 'K'
+                ? u === 'Kristel'
                   ? 'bg-rose-500 text-white scale-110 shadow-md shadow-rose-200'
                   : 'bg-purple-500 text-white scale-110 shadow-md shadow-purple-200'
                 : 'bg-gray-100 text-gray-400 hover:bg-gray-200'

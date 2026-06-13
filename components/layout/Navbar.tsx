@@ -45,7 +45,7 @@ export default function Navbar() {
         <div className="flex items-center gap-1.5 text-xs text-gray-400">
           <span className="w-5 h-5 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center text-xs font-semibold">K</span>
           <Heart size={10} className="text-rose-300" fill="currentColor" />
-          <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center text-xs font-semibold">J</span>
+          <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center text-xs font-semibold">E</span>
         </div>
       </div>
     </nav>

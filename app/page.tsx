@@ -17,7 +17,7 @@ export default function HomePage() {
             <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-medium">K</span>
             <span className="mx-1 text-gray-300">&</span>
             <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">J</span>
-            <span className="ml-1">watching together</span>
+            <span className="ml-1">Kristel & Eric</span>
           </div>
         </div>
       </nav>
