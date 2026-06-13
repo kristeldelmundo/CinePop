@@ -111,3 +111,64 @@ body {
   color: #7c3aed;
   border: 1px solid #ddd6fe;
 }
+
+/* ===== Popcorn popping loader (randomizer) ===== */
+
+/* The pot shakes while cooking */
+@keyframes pot-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-3px) rotate(-2deg); }
+  75% { transform: translateX(3px) rotate(2deg); }
+}
+
+.pot-shake {
+  animation: pot-shake 0.4s ease-in-out infinite;
+}
+
+/* Individual kernels pop up, arc, and fall */
+@keyframes kernel-pop {
+  0% {
+    transform: translate(0, 0) scale(0.3);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(var(--pop-x, 0), -70px) scale(1.1) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--pop-x, 0) * 1.6), 10px) scale(0.9) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.kernel {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  font-size: 22px;
+  animation: kernel-pop 1.1s ease-out infinite;
+}
+
+/* Gentle bob for the picked title reveal */
+@keyframes title-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.title-bob {
+  animation: title-bob 2.5s ease-in-out infinite;
+}
+
+/* Confetti-like pop for the reveal */
+@keyframes burst {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.burst {
+  animation: burst 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
