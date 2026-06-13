@@ -4,7 +4,6 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'CinePop 🍿',
   description: 'Pick, watch, and feel — your shared movie night app.',
-  icons: { icon: '/favicon.ico' },
   openGraph: {
     title: 'CinePop',
     description: 'Pick, watch, and feel — your shared movie night app.',
