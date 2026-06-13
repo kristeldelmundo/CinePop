@@ -36,6 +36,15 @@ export interface OMDBMovie {
   Poster: string
   Genre: string
   imdbRating: string
+  imdbID: string
   Response: string
   Type: string
+}
+
+export interface OMDBSearchResult {
+  Title: string
+  Year: string
+  imdbID: string
+  Type: string
+  Poster: string
 }
