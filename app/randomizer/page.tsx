@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase'
 import { Shuffle, CheckCircle, Star, RotateCcw, Film, Tv } from 'lucide-react'
 import { clsx } from 'clsx'
 
-type Filter = 'all' | 'movie' | 'tv' | 'K' | 'J'
+type Filter = 'all' | 'movie' | 'tv' | 'Kristel' | 'Eric'
 
 export default function RandomizerPage() {
   const router = useRouter()
@@ -31,8 +31,8 @@ export default function RandomizerPage() {
     return items.filter(i => {
       if (filter === 'movie') return i.type === 'movie'
       if (filter === 'tv') return i.type === 'tv'
-      if (filter === 'K') return i.added_by === 'K'
-      if (filter === 'J') return i.added_by === 'J'
+      if (filter === 'K') return i.added_by === 'Kristel'
+      if (filter === 'Eric') return i.added_by === 'Eric'
       return true
     })
   }
@@ -63,8 +63,8 @@ export default function RandomizerPage() {
     { value: 'all', label: 'Any' },
     { value: 'movie', label: 'Movies only' },
     { value: 'tv', label: 'TV only' },
-    { value: 'K', label: "K's picks" },
-    { value: 'J', label: "J's picks" },
+    { value: 'K', label: "Kristel's picks" },
+    { value: 'J', label: "Eric's picks" },
   ]
 
   const pool = getPool()
