@@ -21,11 +21,6 @@ const REACTIONS = [
   { emoji: '💀', label: "So bad it's good" },
 ]
 
-const REVIEWERS = [
-  { key: 'kristel' as const, label: 'Kristel', initial: 'K', color: 'rose' },
-  { key: 'eric' as const, label: 'Eric', initial: 'E', color: 'purple' },
-]
-
 function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [hover, setHover] = useState(0)
   return (
@@ -90,6 +85,13 @@ export default function ReviewPage() {
     if (data) setPastReviews(prev => [data, ...prev])
     setSaving(false)
     setSaved(true)
+    // Reset the form so it's ready for the next review
+    setSelectedId('')
+    setRatingK(0)
+    setRatingJ(0)
+    setThoughtsK('')
+    setThoughtsJ('')
+    setReactions([])
     setTimeout(() => setSaved(false), 3000)
   }
 
@@ -290,6 +292,22 @@ export default function ReviewPage() {
                     </div>
                     {r.reactions?.length > 0 && (
                       <p className="text-sm mt-1">{r.reactions.map(label => REACTIONS.find(x => x.label === label)?.emoji).join(' ')}</p>
+                    )}
+                    {(r.thoughts_k || r.thoughts_j) && (
+                      <div className="mt-2 space-y-1.5">
+                        {r.thoughts_k && (
+                          <p className="text-xs text-gray-500 leading-relaxed">
+                            <span className="font-semibold text-rose-500">Kristel:</span>{' '}
+                            <span className="italic">&quot;{r.thoughts_k}&quot;</span>
+                          </p>
+                        )}
+                        {r.thoughts_j && (
+                          <p className="text-xs text-gray-500 leading-relaxed">
+                            <span className="font-semibold text-purple-500">Eric:</span>{' '}
+                            <span className="italic">&quot;{r.thoughts_j}&quot;</span>
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
