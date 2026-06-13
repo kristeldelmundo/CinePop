@@ -21,7 +21,6 @@ import Popcorn from "@/components/ui/Popcorn";
 
 type Filter = "all" | "movie" | "tv" | "Kristel" | "Eric";
 
-// Fun messages that cycle while the popcorn is "cooking"
 const COOKING_MESSAGES = [
   "Heating up the kettle...",
   "Buttering the picks...",
@@ -30,7 +29,6 @@ const COOKING_MESSAGES = [
   "Picking the tastiest one...",
 ];
 
-// Popcorn pieces + horizontal offsets/sizes so they pop in different directions
 const KERNELS = [
   { x: "-55px", delay: "0s", size: 34 },
   { x: "45px", delay: "0.15s", size: 40 },
@@ -39,6 +37,12 @@ const KERNELS = [
   { x: "-65px", delay: "0.6s", size: 32 },
   { x: "20px", delay: "0.75s", size: 38 },
 ];
+
+function youtubeSearchUrl(title: string, year?: string | null) {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(
+    `${title} ${year || ""} trailer`,
+  )}`;
+}
 
 export default function RandomizerPage() {
   const router = useRouter();
@@ -61,7 +65,6 @@ export default function RandomizerPage() {
       });
   }, []);
 
-  // Cycle the cooking messages while spinning
   useEffect(() => {
     if (!spinning) return;
     const timer = setInterval(() => {
@@ -89,7 +92,6 @@ export default function RandomizerPage() {
     setMsgIdx(0);
     setTrailerUrl(null);
 
-    // Longer, suspenseful "cooking" time so the popcorn animation shines
     await new Promise((r) => setTimeout(r, 2600));
     const chosen = pool[Math.floor(Math.random() * pool.length)];
     setPick(chosen);
@@ -98,9 +100,20 @@ export default function RandomizerPage() {
 
     // Fetch the trailer link in the background
     setLoadingTrailer(true);
-    const url = await fetchTrailerUrl(chosen.title, chosen.type, chosen.year);
-    setTrailerUrl(url);
+    try {
+      const url = await fetchTrailerUrl(chosen.title, chosen.type, chosen.year);
+      setTrailerUrl(url);
+    } catch {
+      setTrailerUrl(youtubeSearchUrl(chosen.title, chosen.year));
+    }
     setLoadingTrailer(false);
+  }
+
+  function openTrailer() {
+    if (!pick) return;
+    // Use the found trailer, or fall back to a YouTube search
+    const url = trailerUrl || youtubeSearchUrl(pick.title, pick.year);
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   async function markWatched() {
@@ -174,7 +187,6 @@ export default function RandomizerPage() {
           {spinning && (
             <div className="flex flex-col items-center">
               <div className="relative w-44 h-36 flex items-end justify-center">
-                {/* Popping popcorn pieces */}
                 {KERNELS.map((k, i) => (
                   <span
                     key={i}
@@ -190,16 +202,12 @@ export default function RandomizerPage() {
                   </span>
                 ))}
 
-                {/* Striped popcorn box */}
                 <div className="pot-shake relative z-10">
                   <svg width="84" height="80" viewBox="0 0 84 80" xmlns="http://www.w3.org/2000/svg">
-                    {/* Box body (trapezoid) */}
                     <path d="M14 26 L70 26 L62 78 L22 78 Z" fill="#f43f72" />
-                    {/* White stripes */}
                     <path d="M26 26 L31 26 L25 78 L20.5 78 Z" fill="#ffffff" opacity="0.9" />
                     <path d="M40 26 L45 26 L43 78 L38 78 Z" fill="#ffffff" opacity="0.9" />
                     <path d="M54 26 L59 26 L61 78 L56 78 Z" fill="#ffffff" opacity="0.9" />
-                    {/* Rim */}
                     <rect x="10" y="20" width="64" height="9" rx="3" fill="#be1246" />
                   </svg>
                 </div>
@@ -276,21 +284,14 @@ export default function RandomizerPage() {
                 </p>
               )}
 
-              {/* Watch Trailer button */}
-              <a
-                href={trailerUrl || undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={clsx(
-                  "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all",
-                  trailerUrl
-                    ? "bg-red-500 hover:bg-red-600 text-white hover:scale-105 shadow-md shadow-red-200"
-                    : "bg-gray-100 text-gray-400 cursor-wait pointer-events-none",
-                )}
+              {/* Watch Trailer button — always clickable, opens trailer or YT search */}
+              <button
+                onClick={openTrailer}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-all hover:scale-105 shadow-md shadow-red-200"
               >
                 <Play size={16} fill="currentColor" />
-                {loadingTrailer ? "Finding trailer..." : "Watch Trailer"}
-              </a>
+                {loadingTrailer ? "Watch Trailer (searching...)" : "Watch Trailer"}
+              </button>
             </div>
           )}
         </div>
