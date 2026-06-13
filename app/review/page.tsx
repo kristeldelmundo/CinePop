@@ -18,7 +18,12 @@ const REACTIONS = [
   { emoji: '😐', label: 'Meh' },
   { emoji: '🔁', label: 'Would rewatch' },
   { emoji: '💑', label: 'Perfect date night' },
-  { emoji: '💀', label: 'So bad it\'s good' },
+  { emoji: '💀', label: "So bad it's good" },
+]
+
+const REVIEWERS = [
+  { key: 'kristel' as const, label: 'Kristel', initial: 'K', color: 'rose' },
+  { key: 'eric' as const, label: 'Eric', initial: 'E', color: 'purple' },
 ]
 
 function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
@@ -91,12 +96,12 @@ export default function ReviewPage() {
   async function copyShareText() {
     if (!selected) return
     const text = [
-      `🎬 We watched: ${selected.title}`,
+      `🍿 We watched: ${selected.title}`,
       avgRating ? `⭐ ${avgRating}/5` : '',
       reactions.length ? reactions.map(r => REACTIONS.find(x => x.label === r)?.emoji + ' ' + r).join(' · ') : '',
-      thoughtsK ? `K: "${thoughtsK}"` : '',
-      thoughtsJ ? `J: "${thoughtsJ}"` : '',
-      '#TheWatchlist #MovieNight',
+      thoughtsK ? `Kristel: "${thoughtsK}"` : '',
+      thoughtsJ ? `Eric: "${thoughtsJ}"` : '',
+      '#CinePop #MovieNight',
     ].filter(Boolean).join('\n')
     await navigator.clipboard.writeText(text)
     setCopied(true)
@@ -105,13 +110,18 @@ export default function ReviewPage() {
 
   async function nativeShare() {
     if (!selected) return
-    const text = `🎬 We watched ${selected.title} — ${avgRating}/5 stars! ${reactions.join(' ')} #TheWatchlist`
+    const text = `🍿 We watched ${selected.title} — ${avgRating}/5 stars! ${reactions.join(' ')} #CinePop`
     if (navigator.share) {
-      await navigator.share({ title: 'The Watchlist', text })
+      await navigator.share({ title: 'CinePop', text })
     } else {
       copyShareText()
     }
   }
+
+  const reviewerData = [
+    { label: 'Kristel', initial: 'K', color: 'rose', rating: ratingK, setRating: setRatingK, thoughts: thoughtsK, setThoughts: setThoughtsK },
+    { label: 'Eric', initial: 'E', color: 'purple', rating: ratingJ, setRating: setRatingJ, thoughts: thoughtsJ, setThoughts: setThoughtsJ },
+  ]
 
   return (
     <>
@@ -157,17 +167,14 @@ export default function ReviewPage() {
 
         {/* Ratings */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          {[
-            { who: 'K', color: 'rose', rating: ratingK, setRating: setRatingK, thoughts: thoughtsK, setThoughts: setThoughtsK },
-            { who: 'J', color: 'purple', rating: ratingJ, setRating: setRatingJ, thoughts: thoughtsJ, setThoughts: setThoughtsJ },
-          ].map(({ who, color, rating, setRating, thoughts, setThoughts }) => (
-            <div key={who} className="glass rounded-2xl p-4">
+          {reviewerData.map(({ label, initial, color, rating, setRating, thoughts, setThoughts }) => (
+            <div key={label} className="glass rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className={clsx(
                   'w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold',
                   color === 'rose' ? 'bg-rose-100 text-rose-600' : 'bg-purple-100 text-purple-600'
-                )}>{who}</span>
-                <span className="text-sm font-medium text-gray-600">{who === 'K' ? 'Your' : who + "'s"} rating</span>
+                )}>{initial}</span>
+                <span className="text-sm font-medium text-gray-600">{label}&apos;s rating</span>
               </div>
               <StarRating value={rating} onChange={setRating} />
               {rating > 0 && (
@@ -176,7 +183,7 @@ export default function ReviewPage() {
               <textarea
                 value={thoughts}
                 onChange={e => setThoughts(e.target.value)}
-                placeholder={`${who}'s thoughts...`}
+                placeholder={`${label}'s thoughts...`}
                 rows={3}
                 className="w-full mt-3 bg-white/60 border border-rose-100 rounded-xl px-3 py-2 text-xs text-gray-600 placeholder-gray-300 outline-none focus:border-rose-300 resize-none"
               />
@@ -215,7 +222,7 @@ export default function ReviewPage() {
                   <Image src={selected.poster} alt={selected.title} width={56} height={80} className="rounded-xl object-cover shadow-md flex-shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-rose-400 font-medium mb-0.5">🎬 we watched</p>
+                  <p className="text-xs text-rose-400 font-medium mb-0.5">🍿 we watched</p>
                   <h3 className="font-display text-lg font-bold text-gray-800 leading-tight mb-1">{selected.title}</h3>
                   {avgRating ? (
                     <p className="text-amber-500 text-sm font-medium mb-1">{'★'.repeat(Math.round(Number(avgRating)))} <span className="text-gray-400 text-xs">{avgRating}/5</span></p>
@@ -224,7 +231,7 @@ export default function ReviewPage() {
                     <p className="text-sm mb-1">{reactions.map(r => REACTIONS.find(x => x.label === r)?.emoji).join(' ')}</p>
                   )}
                   {(thoughtsK || thoughtsJ) && (
-                    <p className="text-xs text-gray-500 italic line-clamp-2">"{thoughtsK || thoughtsJ}"</p>
+                    <p className="text-xs text-gray-500 italic line-clamp-2">&quot;{thoughtsK || thoughtsJ}&quot;</p>
                   )}
                 </div>
               </div>
@@ -232,9 +239,9 @@ export default function ReviewPage() {
                 <div className="flex items-center gap-1">
                   <span className="w-5 h-5 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center text-xs font-semibold">K</span>
                   <Heart size={8} className="text-rose-300" fill="currentColor" />
-                  <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center text-xs font-semibold">J</span>
+                  <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center text-xs font-semibold">E</span>
                 </div>
-                <span className="text-xs text-gray-400 font-mono">#TheWatchlist</span>
+                <span className="text-xs text-gray-400 font-mono">#CinePop</span>
               </div>
             </div>
 
@@ -278,8 +285,8 @@ export default function ReviewPage() {
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-gray-800 text-sm">{r.title}</h4>
                     <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                      {r.rating_k > 0 && <span>K: {'★'.repeat(r.rating_k)}</span>}
-                      {r.rating_j > 0 && <span>J: {'★'.repeat(r.rating_j)}</span>}
+                      {r.rating_k > 0 && <span>Kristel: {'★'.repeat(r.rating_k)}</span>}
+                      {r.rating_j > 0 && <span>Eric: {'★'.repeat(r.rating_j)}</span>}
                     </div>
                     {r.reactions?.length > 0 && (
                       <p className="text-sm mt-1">{r.reactions.map(label => REACTIONS.find(x => x.label === label)?.emoji).join(' ')}</p>
