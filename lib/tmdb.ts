@@ -26,7 +26,7 @@ interface TmdbResult {
 }
 
 function mapResults(results: TmdbResult[], type: 'movie' | 'tv'): TrendingItem[] {
-  return results.slice(0, 10).map((r) => {
+  return results.map((r) => {
     const date = r.release_date || r.first_air_date || ''
     return {
       id: r.id,
@@ -40,32 +40,34 @@ function mapResults(results: TmdbResult[], type: 'movie' | 'tv'): TrendingItem[]
   })
 }
 
-export async function fetchTrendingMovies(): Promise<TrendingItem[]> {
+// Fetch multiple pages so we have a big pool (~40) to rotate fresh picks from
+async function fetchTrendingPool(
+  kind: 'movie' | 'tv',
+): Promise<TrendingItem[]> {
   if (!TMDB_API_KEY) return []
   try {
-    const res = await fetch(
-      `${TMDB_BASE}/trending/movie/week?api_key=${TMDB_API_KEY}`,
-    )
-    const data = await res.json()
-    if (Array.isArray(data.results)) return mapResults(data.results, 'movie')
-    return []
+    const [p1, p2] = await Promise.all([
+      fetch(`${TMDB_BASE}/trending/${kind}/week?api_key=${TMDB_API_KEY}&page=1`),
+      fetch(`${TMDB_BASE}/trending/${kind}/week?api_key=${TMDB_API_KEY}&page=2`),
+    ])
+    const d1 = await p1.json()
+    const d2 = await p2.json()
+    const combined = [
+      ...(Array.isArray(d1.results) ? d1.results : []),
+      ...(Array.isArray(d2.results) ? d2.results : []),
+    ]
+    return mapResults(combined, kind)
   } catch {
     return []
   }
 }
 
+export async function fetchTrendingMovies(): Promise<TrendingItem[]> {
+  return fetchTrendingPool('movie')
+}
+
 export async function fetchTrendingTV(): Promise<TrendingItem[]> {
-  if (!TMDB_API_KEY) return []
-  try {
-    const res = await fetch(
-      `${TMDB_BASE}/trending/tv/week?api_key=${TMDB_API_KEY}`,
-    )
-    const data = await res.json()
-    if (Array.isArray(data.results)) return mapResults(data.results, 'tv')
-    return []
-  } catch {
-    return []
-  }
+  return fetchTrendingPool('tv')
 }
 
 // Convert a trending item into the shape used by our watchlist
