@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Film, Shuffle, Star, Heart, Popcorn } from 'lucide-react'
+import { Film, Shuffle, Star, Heart } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -16,7 +16,7 @@ export default function HomePage() {
           <div className="flex items-center gap-1 bg-white/80 border border-rose-100 rounded-full px-4 py-1.5 text-sm text-gray-500">
             <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-medium">K</span>
             <span className="mx-1 text-gray-300">&</span>
-            <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">J</span>
+            <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">E</span>
             <span className="ml-1">Kristel & Eric</span>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function HomePage() {
             href="/randomizer"
             className="flex items-center justify-center gap-2 bg-white hover:bg-rose-50 text-rose-500 font-medium px-8 py-3.5 rounded-full border border-rose-200 transition-all hover:scale-105"
           >
-            <Shuffle size={18} /> Pick Tonight's Watch
+            <Shuffle size={18} /> Pick Tonight&apos;s Watch
           </Link>
         </div>
 
@@ -56,7 +56,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
           {[
             { icon: <Film size={22} />, color: 'rose', title: 'Shared Watchlist', desc: 'Both of you add movies & shows, sorted by category' },
-            { icon: <Shuffle size={22} />, color: 'plum', title: 'Movie Randomizer', desc: 'Can\'t decide? Let the spinner pick for you' },
+            { icon: <Shuffle size={22} />, color: 'plum', title: 'Movie Randomizer', desc: "Can't decide? Let the spinner pick for you" },
             { icon: <Star size={22} />, color: 'amber', title: 'Rate & Share', desc: 'Review together and share your movie card with friends' },
           ].map((f, i) => (
             <div key={i} className="glass rounded-2xl p-5 text-left hover:scale-105 transition-transform">
