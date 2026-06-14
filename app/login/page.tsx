@@ -30,7 +30,7 @@ export default function AuthPage() {
         password,
         options: {
           data: { full_name: displayName || email.split('@')[0] },
-          emailRedirectTo: `${window.location.origin}/watchlist`,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       })
       if (error) {
@@ -59,7 +59,7 @@ export default function AuthPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/watchlist`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     })
     if (error) setError(error.message)
