@@ -1,9 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { Film, Shuffle, Star, Heart, Popcorn } from 'lucide-react'
+import { Film, Shuffle, Star, Heart } from 'lucide-react'
+import { useAuth } from '@/components/auth/AuthProvider'
+import { clsx } from 'clsx'
 
 export default function HomePage() {
+  const { user, profile } = useAuth()
+
+  const name = profile?.display_name || user?.email?.split('@')[0] || null
+  const initial = (name || 'U').charAt(0).toUpperCase()
+  const accent = profile?.accent_color === 'purple' ? 'purple' : 'rose'
+
   return (
     <main className="min-h-screen flex flex-col">
       {/* Nav */}
@@ -13,12 +21,36 @@ export default function HomePage() {
           <span className="font-display text-xl font-medium text-rose-600 italic">CinePop</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-white/80 border border-rose-100 rounded-full px-4 py-1.5 text-sm text-gray-500">
-            <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-medium">K</span>
-            <span className="mx-1 text-gray-300">&amp;</span>
-            <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">E</span>
-            <span className="ml-1">Kristel &amp; Eric</span>
-          </div>
+          {user ? (
+            // Logged in — show this person's profile chip
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 bg-white/80 border border-rose-100 rounded-full px-4 py-1.5 text-sm text-gray-500 hover:border-rose-300 transition-colors"
+            >
+              {profile?.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profile.avatar_url} alt={name || 'You'} className="w-6 h-6 rounded-full object-cover" />
+              ) : (
+                <span
+                  className={clsx(
+                    'w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium',
+                    accent === 'purple' ? 'bg-purple-100 text-purple-600' : 'bg-rose-100 text-rose-600',
+                  )}
+                >
+                  {initial}
+                </span>
+              )}
+              <span className="ml-1">{name}</span>
+            </Link>
+          ) : (
+            // Logged out — invite them to log in
+            <Link
+              href="/login"
+              className="flex items-center gap-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full px-5 py-1.5 text-sm font-medium transition-colors"
+            >
+              Log in
+            </Link>
+          )}
         </div>
       </nav>
 
