@@ -12,12 +12,13 @@ import {
 } from "@/lib/tmdb";
 import { Film, Tv, Plus, Check, TrendingUp, Clapperboard } from "lucide-react";
 import { clsx } from "clsx";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 type Tab = "movie" | "tv";
 
 const VISIBLE = 10; // how many to show at once
 
-export default function TrendingPage() {
+function TrendingInner() {
   const [tab, setTab] = useState<Tab>("movie");
   const [movies, setMovies] = useState<TrendingItem[]>([]);
   const [shows, setShows] = useState<TrendingItem[]>([]);
@@ -276,5 +277,13 @@ export default function TrendingPage() {
         )}
       </main>
     </>
+  );
+}
+
+export default function TrendingPage() {
+  return (
+    <RequireAuth>
+      <TrendingInner />
+    </RequireAuth>
   );
 }
