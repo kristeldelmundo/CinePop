@@ -351,6 +351,14 @@ function ProfileInner() {
                   <div className="text-base font-display italic font-bold leading-tight mt-1" style={{ color: customTextColor || '#a855f7' }}>✨ {viewerType}</div>
                 )}
                 {tagline && <div className="text-[15px] italic truncate mt-1" style={{ color: customTextColor || '#fb7093' }}>&ldquo;{tagline}&rdquo;</div>}
+                {showNowWatching && (
+                  <div className="flex items-center gap-1.5 mt-1.5 min-w-0">
+                    <span className="cp-live flex-shrink-0" />
+                    <span className="text-[13px] truncate" style={{ color: bodyColor || '#6b7280' }}>
+                      watching <span className="font-semibold" style={{ color: nameColor || '#374151' }}>{nowWatching}</span>
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -366,28 +374,6 @@ function ProfileInner() {
               <MiniDiv />
               <MiniStat icon={stats.topReaction ? REACTION_EMOJI[stats.topReaction] || '🍿' : '✨'} n="" label="React" ring={accentObj.ring} />
             </div>
-
-            {/* Now watching */}
-            {showNowWatching && (
-              <div className="mt-5 rounded-[16px] p-4 flex items-center gap-4" style={{ background: 'linear-gradient(100deg,#e0457b,#a855f7)' }}>
-                <div className="rounded-[8px] flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ width: 44, height: 64, background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.25)' }}>
-                  {nowWatchingPoster ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={nowWatchingPoster} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="cp-pop text-xl">🍿</span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="cp-live" />
-                    <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.9)' }}>Watching now</span>
-                  </div>
-                  <div className="text-[19px] font-bold text-white leading-tight truncate mt-0.5">{nowWatching}</div>
-                </div>
-                <span className="text-[12px] flex-shrink-0" style={{ color: 'rgba(255,255,255,0.7)' }}>{daysAgoLabel(nowStartedAt)}</span>
-              </div>
-            )}
 
             {/* Genres */}
             {genres.length > 0 && (
