@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
@@ -19,6 +19,7 @@ import {
 import { clsx } from "clsx";
 import Popcorn from "@/components/ui/Popcorn";
 import RequireAuth from "@/components/auth/RequireAuth";
+import { useCircle } from "@/components/auth/CircleProvider";
 
 type Filter = "all" | "movie" | "tv" | "Kristel" | "Eric";
 
@@ -47,6 +48,7 @@ function youtubeSearchUrl(title: string, year?: string | null) {
 
 function RandomizerInner() {
   const router = useRouter();
+  const { activeCircle } = useCircle();
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [pick, setPick] = useState<WatchlistItem | null>(null);
   const [spinning, setSpinning] = useState(false);
@@ -56,15 +58,22 @@ function RandomizerInner() {
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const [loadingTrailer, setLoadingTrailer] = useState(false);
 
-  useEffect(() => {
-    supabase
+  const loadItems = useCallback(async () => {
+    if (!activeCircle) {
+      setItems([]);
+      return;
+    }
+    const { data } = await supabase
       .from("watchlist_items")
       .select("*")
-      .eq("watched", false)
-      .then(({ data }) => {
-        if (data) setItems(data);
-      });
-  }, []);
+      .eq("circle_id", activeCircle.id)
+      .eq("watched", false);
+    if (data) setItems(data);
+  }, [activeCircle]);
+
+  useEffect(() => {
+    loadItems();
+  }, [loadItems]);
 
   useEffect(() => {
     if (!spinning) return;
@@ -148,7 +157,12 @@ function RandomizerInner() {
             <span className="gradient-text italic">Pick for us!</span> 🍿
           </h1>
           <p className="text-sm text-gray-400">
-            {pool.length} titles in the pool
+            {activeCircle && (
+              <span className="text-rose-400 font-medium">
+                {activeCircle.emoji} {activeCircle.name}
+              </span>
+            )}{" "}
+            · {pool.length} titles in the pool
           </p>
         </div>
 
@@ -337,7 +351,7 @@ function RandomizerInner() {
 
         {pool.length === 0 && (
           <p className="text-sm text-gray-400 mt-4">
-            Your watchlist is empty!{" "}
+            This circle&apos;s watchlist is empty!{" "}
             <a href="/watchlist" className="text-rose-500 underline">
               Add some titles first
             </a>
