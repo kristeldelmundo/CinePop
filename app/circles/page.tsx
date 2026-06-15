@@ -29,6 +29,76 @@ interface Member {
   profile: { id: string; display_name: string | null; avatar_url: string | null; accent_color: string | null } | null
 }
 
+// A cute confirmation dialog, used for leaving / removing.
+interface ConfirmConfig {
+  emoji: string
+  title: string
+  body: string
+  confirmLabel: string
+  tone: 'rose' | 'amber'
+  onConfirm: () => void
+}
+
+function ConfirmModal({
+  config,
+  busy,
+  onCancel,
+}: {
+  config: ConfirmConfig
+  busy: boolean
+  onCancel: () => void
+}) {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center px-4 bg-black/30 backdrop-blur-sm">
+      <div className="w-full max-w-xs bg-white rounded-3xl shadow-2xl shadow-rose-200/50 overflow-hidden burst">
+        <div className="bg-gradient-to-br from-rose-100 to-purple-100 px-6 pt-7 pb-5 text-center">
+          <div className="text-5xl mb-1">{config.emoji}</div>
+          <h2 className="font-display text-xl font-bold text-gray-800">{config.title}</h2>
+        </div>
+        <div className="px-6 py-5">
+          <p className="text-sm text-gray-500 leading-relaxed text-center mb-5">
+            {config.body}
+          </p>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={config.onConfirm}
+              disabled={busy}
+              className={clsx(
+                'w-full flex items-center justify-center gap-2 text-white font-medium py-3 rounded-2xl text-sm transition-all disabled:opacity-60',
+                config.tone === 'rose'
+                  ? 'bg-rose-500 hover:bg-rose-600'
+                  : 'bg-amber-500 hover:bg-amber-600',
+              )}
+            >
+              {busy ? <Loader2 size={16} className="animate-spin" /> : null}
+              {config.confirmLabel}
+            </button>
+            <button
+              onClick={onCancel}
+              disabled={busy}
+              className="w-full text-center text-xs text-gray-400 hover:text-gray-600 py-1.5 transition-colors"
+            >
+              Never mind
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// A cute floating toast for goodbye / removed messages.
+function Toast({ emoji, text }: { emoji: string; text: string }) {
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] burst">
+      <div className="flex items-center gap-2.5 bg-white rounded-full shadow-xl shadow-rose-200/50 border border-rose-100 pl-3 pr-5 py-2.5">
+        <span className="text-xl">{emoji}</span>
+        <span className="text-sm font-medium text-gray-700">{text}</span>
+      </div>
+    </div>
+  )
+}
+
 function CirclesInner() {
   const { user } = useAuth()
   const { circles, activeCircle, setActiveCircle, refreshCircles, loading } = useCircle()
@@ -61,6 +131,16 @@ function CirclesInner() {
   const [removingId, setRemovingId] = useState<string | null>(null)
   const [leaving, setLeaving] = useState(false)
   const [manageMsg, setManageMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+
+  // Cute confirm dialog + toast
+  const [confirmConfig, setConfirmConfig] = useState<ConfirmConfig | null>(null)
+  const [confirmBusy, setConfirmBusy] = useState(false)
+  const [toast, setToast] = useState<{ emoji: string; text: string } | null>(null)
+
+  function showToast(emoji: string, text: string) {
+    setToast({ emoji, text })
+    setTimeout(() => setToast(null), 3500)
+  }
 
   const loadMembers = useCallback(async () => {
     if (!activeCircle) return
@@ -178,15 +258,31 @@ function CirclesInner() {
     setInviting(false)
   }
 
-  async function handleRemoveMember(member: Member) {
+  // Open the cute confirm dialog for removing a member.
+  function askRemoveMember(member: Member) {
     if (!activeCircle || removingId) return
     const nm = member.profile?.display_name || 'this member'
-    if (!window.confirm(`Remove ${nm} from ${activeCircle.name}?`)) return
+    setConfirmConfig({
+      emoji: '🫶',
+      title: `Remove ${nm}?`,
+      body: `${nm} will leave ${activeCircle.name} and lose access to this shared watchlist. You can always invite them back later!`,
+      confirmLabel: `Yes, remove ${nm}`,
+      tone: 'amber',
+      onConfirm: () => doRemoveMember(member),
+    })
+  }
+
+  async function doRemoveMember(member: Member) {
+    if (!activeCircle) return
+    const nm = member.profile?.display_name || 'this member'
+    setConfirmBusy(true)
     setRemovingId(member.user_id)
     setManageMsg(null)
     const result = await removeCircleMember(activeCircle.id, member.user_id)
+    setConfirmBusy(false)
+    setConfirmConfig(null)
     if (result.ok) {
-      setManageMsg({ kind: 'ok', text: `Removed ${nm}.` })
+      showToast('👋', `${nm} has left the circle — until next movie night!`)
       loadMembers()
     } else if (result.reason === 'cannot_remove_owner') {
       setManageMsg({ kind: 'err', text: "The circle owner can't be removed." })
@@ -196,16 +292,32 @@ function CirclesInner() {
     setRemovingId(null)
   }
 
-  async function handleLeave() {
+  // Open the cute confirm dialog for leaving a circle.
+  function askLeave() {
     if (!activeCircle || leaving) return
-    if (!window.confirm(`Leave ${activeCircle.name}? You can rejoin later with an invite.`)) return
+    setConfirmConfig({
+      emoji: '🍿',
+      title: `Leave ${activeCircle.name}?`,
+      body: `You'll step away from this shared watchlist, but the popcorn will be waiting — you can rejoin anytime with an invite. 💕`,
+      confirmLabel: 'Leave the circle',
+      tone: 'rose',
+      onConfirm: doLeave,
+    })
+  }
+
+  async function doLeave() {
+    if (!activeCircle) return
+    const leftName = activeCircle.name
+    setConfirmBusy(true)
     setLeaving(true)
     setManageMsg(null)
     const result = await leaveCircle(activeCircle.id)
+    setConfirmBusy(false)
+    setConfirmConfig(null)
     if (result.ok) {
       const updated = await refreshCircles()
-      // Switch to another circle, or none
       setActiveCircle(updated[0] || null)
+      showToast('💕', `You've left ${leftName}. Catch you at the next showing!`)
     } else if (result.reason === 'owner_cannot_leave') {
       setManageMsg({ kind: 'err', text: "You own this circle, so you can't leave it. You'd need to delete it instead (coming soon)." })
     } else {
@@ -218,6 +330,15 @@ function CirclesInner() {
 
   return (
     <>
+      {confirmConfig && (
+        <ConfirmModal
+          config={confirmConfig}
+          busy={confirmBusy}
+          onCancel={() => setConfirmConfig(null)}
+        />
+      )}
+      {toast && <Toast emoji={toast.emoji} text={toast.text} />}
+
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-6">
@@ -443,7 +564,7 @@ function CirclesInner() {
                             )}
                             {canRemove && (
                               <button
-                                onClick={() => handleRemoveMember(m)}
+                                onClick={() => askRemoveMember(m)}
                                 disabled={removingId === m.user_id}
                                 className="ml-0.5 w-4 h-4 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
                                 title={`Remove ${nm}`}
@@ -475,7 +596,7 @@ function CirclesInner() {
                     {/* Leave circle (non-owners only) */}
                     {!isOwner && (
                       <button
-                        onClick={handleLeave}
+                        onClick={askLeave}
                         disabled={leaving}
                         className="w-full flex items-center justify-center gap-2 mt-3 bg-white/60 hover:bg-red-50 text-gray-500 hover:text-red-500 border border-rose-100 font-medium py-2.5 rounded-xl text-sm transition-all"
                       >
