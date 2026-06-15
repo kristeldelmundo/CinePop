@@ -86,3 +86,47 @@ export async function loadProfileStats(userId: string): Promise<ProfileStats> {
     topReaction,
   }
 }
+
+// ----------------------------------------------------------------------------
+// Usernames — for pretty share links: cinepop.live/@<username>
+// Rules (mirrored in the DB check constraint): 3-20 chars, lowercase
+// letters/digits/underscore, must start with a letter.
+// ----------------------------------------------------------------------------
+
+export const USERNAME_PATTERN = /^[a-z][a-z0-9_]{2,19}$/
+
+export function isValidUsername(name: string): boolean {
+  return USERNAME_PATTERN.test(name)
+}
+
+// Normalize user input into a candidate username (lowercase, strip invalid
+// chars). Used both to suggest a username from a display name and to clean
+// up whatever someone types in the field.
+export function normalizeUsername(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '')
+    .slice(0, 20)
+}
+
+// Checks whether a username is free. `currentUserId` lets a user "claim"
+// their own existing username without it counting as taken.
+export async function isUsernameAvailable(username: string, currentUserId?: string): Promise<boolean> {
+  if (!isValidUsername(username)) return false
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id')
+    .ilike('username', username)
+    .maybeSingle()
+  if (error) return false
+  if (!data) return true
+  return data.id === currentUserId
+}
+
+// Looks up a profile by username (case-insensitive) OR by uuid. Used by the
+// public /u/[id] route so /@<username> and /@<uuid> both resolve.
+export async function findProfileIdentifier(idOrUsername: string): Promise<{ column: 'id' | 'username'; value: string }> {
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (UUID_RE.test(idOrUsername)) return { column: 'id', value: idOrUsername }
+  return { column: 'username', value: idOrUsername.toLowerCase() }
+}
