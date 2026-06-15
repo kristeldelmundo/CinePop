@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import RequireAuth from '@/components/auth/RequireAuth'
 import { useAuth } from '@/components/auth/AuthProvider'
+import { useOnboarding } from '@/components/auth/OnboardingProvider'
 import type { CustomPickItem } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Loader2, Check, Camera, Pencil, Image as ImageIcon, Plus, X, Share2, AtSign, Sparkles } from 'lucide-react'
@@ -39,8 +39,8 @@ interface Stats {
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid'
 
 function ProfileInner() {
-  const router = useRouter()
   const { user, profile, refreshProfile } = useAuth()
+  const { openOnboarding } = useOnboarding()
 
   const [mode, setMode] = useState<'view' | 'edit'>('view')
 
@@ -272,7 +272,7 @@ function ProfileInner() {
     setMode('view')
   }
 
-  // Re-run the onboarding wizard as if this were a brand-new account.
+  // Re-run the onboarding wizard (modal) as if this were a brand-new account.
   async function viewOnboarding() {
     if (!user || launchingOnboarding) return
     setLaunchingOnboarding(true)
@@ -281,7 +281,8 @@ function ProfileInner() {
       .update({ onboarding_completed: false, updated_at: new Date().toISOString() })
       .eq('id', user.id)
     await refreshProfile()
-    router.push('/onboarding')
+    setLaunchingOnboarding(false)
+    openOnboarding()
   }
 
   async function save() {
