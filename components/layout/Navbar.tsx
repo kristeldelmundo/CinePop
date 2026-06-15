@@ -1,51 +1,60 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useState, useRef, useEffect } from 'react'
-import { Film, Shuffle, Star, TrendingUp, LogOut, User as UserIcon, ChevronDown, Users } from 'lucide-react'
-import { clsx } from 'clsx'
-import { useAuth } from '@/components/auth/AuthProvider'
-import { useCircle } from '@/components/auth/CircleProvider'
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import {
+  Film,
+  Shuffle,
+  Star,
+  TrendingUp,
+  LogOut,
+  User as UserIcon,
+  ChevronDown,
+  Users,
+} from "lucide-react";
+import { clsx } from "clsx";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useCircle } from "@/components/auth/CircleProvider";
 
 const navItems = [
-  { href: '/watchlist', label: 'Watchlist', icon: Film },
-  { href: '/trending', label: 'Trending', icon: TrendingUp },
-  { href: '/randomizer', label: 'Pick for us!', icon: Shuffle },
-  { href: '/review', label: 'Rate & Share', icon: Star },
-]
+  { href: "/watchlist", label: "Watchlist", icon: Film },
+  { href: "/trending", label: "Trending", icon: TrendingUp },
+  { href: "/randomizer", label: "Pick for us!", icon: Shuffle },
+  { href: "/review", label: "Rate & Share", icon: Star },
+];
 
 export default function Navbar() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { user, profile, signOut } = useAuth()
-  const { circles, activeCircle, setActiveCircle } = useCircle()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [circleMenuOpen, setCircleMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const circleRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, profile, signOut } = useAuth();
+  const { circles, activeCircle, setActiveCircle } = useCircle();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [circleMenuOpen, setCircleMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
+        setMenuOpen(false);
       }
       if (circleRef.current && !circleRef.current.contains(e.target as Node)) {
-        setCircleMenuOpen(false)
+        setCircleMenuOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   async function handleSignOut() {
-    await signOut()
-    router.push('/login')
+    await signOut();
+    router.push("/login");
   }
 
-  const name = profile?.display_name || user?.email?.split('@')[0] || 'You'
-  const initial = name.charAt(0).toUpperCase()
-  const accent = profile?.accent_color === 'purple' ? 'purple' : 'rose'
+  const name = profile?.display_name || user?.email?.split("@")[0] || "You";
+  const initial = name.charAt(0).toUpperCase();
+  const accent = profile?.accent_color === "purple" ? "purple" : "rose";
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-rose-100">
@@ -63,6 +72,7 @@ export default function Navbar() {
             <button
               onClick={() => setCircleMenuOpen((o) => !o)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-sm font-medium text-rose-600 transition-colors max-w-[200px]"
+            >
               <span>{activeCircle.emoji}</span>
               <span className="truncate">{activeCircle.name}</span>
               <ChevronDown size={12} className="flex-shrink-0" />
@@ -77,14 +87,14 @@ export default function Navbar() {
                   <button
                     key={c.id}
                     onClick={() => {
-                      setActiveCircle(c)
-                      setCircleMenuOpen(false)
+                      setActiveCircle(c);
+                      setCircleMenuOpen(false);
                     }}
                     className={clsx(
-                      'w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors text-left',
+                      "w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors text-left",
                       activeCircle.id === c.id
-                        ? 'bg-rose-50 text-rose-600 font-medium'
-                        : 'text-gray-600 hover:bg-rose-50',
+                        ? "bg-rose-50 text-rose-600 font-medium"
+                        : "text-gray-600 hover:bg-rose-50",
                     )}
                   >
                     <span>{c.emoji}</span>
@@ -109,10 +119,10 @@ export default function Navbar() {
               key={href}
               href={href}
               className={clsx(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all flex-shrink-0',
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all flex-shrink-0",
                 pathname === href
-                  ? 'bg-rose-500 text-white shadow-sm shadow-rose-200'
-                  : 'text-gray-500 hover:bg-rose-50 hover:text-rose-500'
+                  ? "bg-rose-500 text-white shadow-sm shadow-rose-200"
+                  : "text-gray-500 hover:bg-rose-50 hover:text-rose-500",
               )}
             >
               <Icon size={14} />
@@ -138,10 +148,10 @@ export default function Navbar() {
               ) : (
                 <span
                   className={clsx(
-                    'w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold',
-                    accent === 'purple'
-                      ? 'bg-purple-100 text-purple-500'
-                      : 'bg-rose-100 text-rose-500',
+                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold",
+                    accent === "purple"
+                      ? "bg-purple-100 text-purple-500"
+                      : "bg-rose-100 text-rose-500",
                   )}
                 >
                   {initial}
@@ -153,7 +163,9 @@ export default function Navbar() {
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl border border-rose-100 shadow-xl shadow-rose-100/50 overflow-hidden">
                 <div className="px-3 py-2 border-b border-rose-50">
-                  <p className="text-sm font-medium text-gray-800 truncate">{name}</p>
+                  <p className="text-sm font-medium text-gray-800 truncate">
+                    {name}
+                  </p>
                   <p className="text-xs text-gray-400 truncate">{user.email}</p>
                 </div>
                 <Link
@@ -189,5 +201,5 @@ export default function Navbar() {
         )}
       </div>
     </nav>
-  )
+  );
 }
