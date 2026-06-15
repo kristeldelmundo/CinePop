@@ -33,6 +33,7 @@ export interface CustomPickItem {
 export interface Profile {
   id: string
   display_name: string | null
+  username: string | null
   avatar_url: string | null
   accent_color: string | null
   bio: string | null
