@@ -300,12 +300,6 @@ function ProfileInner() {
               className="w-full bg-white/80 border border-rose-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder-gray-300 outline-none focus:border-rose-300"
             />
           )}
-          {showNowWatching && (
-            <button
-              onClick={() => setNowWatching(nowWatching)}
-              className="hidden"
-            />
-          )}
         </div>
 
         {/* Genres */}
