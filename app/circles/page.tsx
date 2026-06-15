@@ -13,9 +13,11 @@ import {
   inviteLink,
   searchUserByEmail,
   addMemberByUserId,
+  leaveCircle,
+  removeCircleMember,
 } from '@/lib/circles'
 import {
-  Plus, Users, Check, LogIn, Loader2, Sparkles, Link2, UserPlus, Search, Pencil, X,
+  Plus, Users, Check, LogIn, Loader2, Sparkles, Link2, UserPlus, Search, Pencil, X, LogOut,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -55,6 +57,11 @@ function CirclesInner() {
   const [editEmoji, setEditEmoji] = useState('🍿')
   const [savingEdit, setSavingEdit] = useState(false)
 
+  // Member management
+  const [removingId, setRemovingId] = useState<string | null>(null)
+  const [leaving, setLeaving] = useState(false)
+  const [manageMsg, setManageMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+
   const loadMembers = useCallback(async () => {
     if (!activeCircle) return
     const m = await getCircleMembers(activeCircle.id)
@@ -75,8 +82,9 @@ function CirclesInner() {
 
   useEffect(() => {
     loadMembers()
-    // Reset edit mode when switching circles
+    // Reset edit/manage state when switching circles
     setEditing(false)
+    setManageMsg(null)
   }, [loadMembers])
 
   async function handleCreate() {
@@ -168,6 +176,42 @@ function CirclesInner() {
       setInviteMsg({ kind: 'err', text: 'Could not add them. Try the invite link.' })
     }
     setInviting(false)
+  }
+
+  async function handleRemoveMember(member: Member) {
+    if (!activeCircle || removingId) return
+    const nm = member.profile?.display_name || 'this member'
+    if (!window.confirm(`Remove ${nm} from ${activeCircle.name}?`)) return
+    setRemovingId(member.user_id)
+    setManageMsg(null)
+    const result = await removeCircleMember(activeCircle.id, member.user_id)
+    if (result.ok) {
+      setManageMsg({ kind: 'ok', text: `Removed ${nm}.` })
+      loadMembers()
+    } else if (result.reason === 'cannot_remove_owner') {
+      setManageMsg({ kind: 'err', text: "The circle owner can't be removed." })
+    } else {
+      setManageMsg({ kind: 'err', text: 'Could not remove them. Try again.' })
+    }
+    setRemovingId(null)
+  }
+
+  async function handleLeave() {
+    if (!activeCircle || leaving) return
+    if (!window.confirm(`Leave ${activeCircle.name}? You can rejoin later with an invite.`)) return
+    setLeaving(true)
+    setManageMsg(null)
+    const result = await leaveCircle(activeCircle.id)
+    if (result.ok) {
+      const updated = await refreshCircles()
+      // Switch to another circle, or none
+      setActiveCircle(updated[0] || null)
+    } else if (result.reason === 'owner_cannot_leave') {
+      setManageMsg({ kind: 'err', text: "You own this circle, so you can't leave it. You'd need to delete it instead (coming soon)." })
+    } else {
+      setManageMsg({ kind: 'err', text: 'Could not leave the circle. Try again.' })
+    }
+    setLeaving(false)
   }
 
   const isOwner = activeCircle?.owner_id === user?.id
@@ -371,10 +415,14 @@ function CirclesInner() {
                       {members.map((m) => {
                         const nm = m.profile?.display_name || 'Member'
                         const isPurple = m.profile?.accent_color === 'purple'
+                        const isMemberOwner = m.role === 'owner'
+                        const isMe = m.user_id === user?.id
+                        // Anyone can remove anyone except the owner. (You leave via the Leave button, not the X.)
+                        const canRemove = !isMemberOwner && !isMe
                         return (
                           <div
                             key={m.user_id}
-                            className="flex items-center gap-2 bg-white/70 border border-rose-100 rounded-full pl-1 pr-3 py-1"
+                            className="flex items-center gap-2 bg-white/70 border border-rose-100 rounded-full pl-1 pr-2 py-1"
                           >
                             {m.profile?.avatar_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
@@ -389,14 +437,52 @@ function CirclesInner() {
                                 {nm.charAt(0).toUpperCase()}
                               </span>
                             )}
-                            <span className="text-xs text-gray-600">{nm}</span>
-                            {m.role === 'owner' && (
+                            <span className="text-xs text-gray-600">{nm}{isMe ? ' (you)' : ''}</span>
+                            {isMemberOwner && (
                               <span className="text-[10px] text-rose-400 font-medium">owner</span>
+                            )}
+                            {canRemove && (
+                              <button
+                                onClick={() => handleRemoveMember(m)}
+                                disabled={removingId === m.user_id}
+                                className="ml-0.5 w-4 h-4 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                                title={`Remove ${nm}`}
+                                aria-label={`Remove ${nm}`}
+                              >
+                                {removingId === m.user_id ? (
+                                  <Loader2 size={11} className="animate-spin" />
+                                ) : (
+                                  <X size={12} />
+                                )}
+                              </button>
                             )}
                           </div>
                         )
                       })}
                     </div>
+
+                    {manageMsg && (
+                      <p
+                        className={clsx(
+                          'text-xs mt-3 px-3 py-2 rounded-lg',
+                          manageMsg.kind === 'ok' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-700',
+                        )}
+                      >
+                        {manageMsg.text}
+                      </p>
+                    )}
+
+                    {/* Leave circle (non-owners only) */}
+                    {!isOwner && (
+                      <button
+                        onClick={handleLeave}
+                        disabled={leaving}
+                        className="w-full flex items-center justify-center gap-2 mt-3 bg-white/60 hover:bg-red-50 text-gray-500 hover:text-red-500 border border-rose-100 font-medium py-2.5 rounded-xl text-sm transition-all"
+                      >
+                        {leaving ? <Loader2 size={15} className="animate-spin" /> : <LogOut size={15} />}
+                        Leave this circle
+                      </button>
+                    )}
                   </>
                 )}
               </div>
