@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import RequireAuth from '@/components/auth/RequireAuth'
 import { useAuth } from '@/components/auth/AuthProvider'
 import type { CustomPickItem } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Check, Camera, Pencil, Image as ImageIcon, Plus, X, Share2, AtSign } from 'lucide-react'
+import { Loader2, Check, Camera, Pencil, Image as ImageIcon, Plus, X, Share2, AtSign, Sparkles } from 'lucide-react'
 import { clsx } from 'clsx'
 import { GENRES, genreByName, deriveViewerType, normalizeUsername, isValidUsername, isUsernameAvailable } from '@/lib/profile'
 import {
@@ -38,6 +39,7 @@ interface Stats {
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid'
 
 function ProfileInner() {
+  const router = useRouter()
   const { user, profile, refreshProfile } = useAuth()
 
   const [mode, setMode] = useState<'view' | 'edit'>('view')
@@ -80,6 +82,9 @@ function ProfileInner() {
   const cardRef = useRef<HTMLDivElement>(null)
 
   const [stats, setStats] = useState<Stats>({ watched: 0, reviews: 0, avg: 0, topReaction: null })
+
+  // Replaying onboarding from the profile page.
+  const [launchingOnboarding, setLaunchingOnboarding] = useState(false)
 
   // Index of the custom-pick slot whose CatalogPicker is open (lift z-index).
   const [openSlot, setOpenSlot] = useState<number | null>(null)
@@ -267,6 +272,18 @@ function ProfileInner() {
     setMode('view')
   }
 
+  // Re-run the onboarding wizard as if this were a brand-new account.
+  async function viewOnboarding() {
+    if (!user || launchingOnboarding) return
+    setLaunchingOnboarding(true)
+    await supabase
+      .from('profiles')
+      .update({ onboarding_completed: false, updated_at: new Date().toISOString() })
+      .eq('id', user.id)
+    await refreshProfile()
+    router.push('/onboarding')
+  }
+
   async function save() {
     if (!user) return
 
@@ -393,6 +410,15 @@ function ProfileInner() {
           </h1>
           {mode === 'view' && (
             <div className="flex items-center gap-2">
+              <button
+                onClick={viewOnboarding}
+                disabled={launchingOnboarding}
+                title="Replay the welcome tour"
+                className="flex items-center gap-1.5 bg-white/80 hover:bg-white text-rose-600 text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-sm disabled:opacity-60"
+              >
+                {launchingOnboarding ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                <span className="hidden sm:inline">View onboarding</span>
+              </button>
               <button
                 onClick={() => setShareOpen(true)}
                 className="flex items-center gap-1.5 bg-white/80 hover:bg-white text-rose-600 text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-sm"
