@@ -275,51 +275,51 @@ function ProfileInner() {
         @keyframes cp-pop { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-3px) rotate(3deg)} }
         @keyframes cp-pulse { 0%{box-shadow:0 0 0 0 rgba(74,222,128,0.6)} 70%{box-shadow:0 0 0 6px rgba(74,222,128,0)} 100%{box-shadow:0 0 0 0 rgba(74,222,128,0)} }
         .cp-pop{display:inline-block;animation:cp-pop 1.4s ease-in-out infinite}
-        .cp-live{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;animation:cp-pulse 2s infinite}
+        .cp-live{width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;animation:cp-pulse 2s infinite}
         .cp-card{background:rgba(255,255,255,0.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.55);}
       `}</style>
 
       <main className="max-w-2xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className={clsx('font-display text-2xl font-bold', headingColor)}>
+        <div className="flex items-center justify-between mb-5">
+          <h1 className={clsx('font-display text-3xl font-bold', headingColor)}>
             My <span className="gradient-text italic">Profile</span>
           </h1>
           {mode === 'view' && (
             <button
               onClick={() => setMode('edit')}
-              className="flex items-center gap-1.5 bg-white/80 hover:bg-white text-rose-600 text-xs font-semibold px-3 py-1.5 rounded-full transition-all shadow-sm"
+              className="flex items-center gap-1.5 bg-white/80 hover:bg-white text-rose-600 text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-sm"
             >
-              <Pencil size={12} /> Edit
+              <Pencil size={14} /> Edit
             </button>
           )}
         </div>
 
-        {/* ===================== VIEW MODE — one wide card (1x scale) ===================== */}
+        {/* ===================== VIEW MODE — one wide card ===================== */}
         {mode === 'view' && (
-          <div className="cp-card rounded-[22px] p-6 shadow-lg shadow-black/5">
+          <div className="cp-card rounded-[22px] p-7 shadow-lg shadow-black/5">
             {/* Header row */}
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-5 items-center">
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={avatarUrl} alt={displayName || 'You'} className="rounded-full object-cover flex-shrink-0 ring-2 ring-white shadow" style={{ width: 64, height: 64 }} />
+                <img src={avatarUrl} alt={displayName || 'You'} className="rounded-full object-cover flex-shrink-0 ring-2 ring-white shadow" style={{ width: 76, height: 76 }} />
               ) : (
-                <span className={clsx('rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0 font-display', accentBg)} style={{ width: 64, height: 64 }}>
+                <span className={clsx('rounded-full flex items-center justify-center text-3xl font-bold text-white flex-shrink-0 font-display', accentBg)} style={{ width: 76, height: 76 }}>
                   {initial}
                 </span>
               )}
               <div className="min-w-0 flex-1">
-                <div className="font-display text-xl font-bold text-gray-800 leading-tight">{displayName || 'Your name'}</div>
+                <div className="font-display text-2xl font-bold text-gray-800 leading-tight">{displayName || 'Your name'}</div>
                 {genres.length > 0 && (
-                  <div className="text-[12.5px] text-purple-500 font-display italic font-bold leading-tight">✨ {viewerType}</div>
+                  <div className="text-sm text-purple-500 font-display italic font-bold leading-tight mt-0.5">✨ {viewerType}</div>
                 )}
-                {tagline && <div className="text-[12px] text-rose-400 italic truncate">&ldquo;{tagline}&rdquo;</div>}
+                {tagline && <div className="text-[13px] text-rose-400 italic truncate mt-0.5">&ldquo;{tagline}&rdquo;</div>}
               </div>
             </div>
 
-            {bio && <p className="text-[12.5px] text-gray-600 leading-snug mt-3">{bio}</p>}
+            {bio && <p className="text-[13.5px] text-gray-600 leading-relaxed mt-4">{bio}</p>}
 
             {/* Stats strip */}
-            <div className="flex items-center mt-3.5 py-3 border-t border-b" style={{ borderColor: 'rgba(243,216,226,0.8)' }}>
+            <div className="flex items-center mt-5 py-4 border-t border-b" style={{ borderColor: 'rgba(243,216,226,0.8)' }}>
               <MiniStat icon="🍿" n={stats.watched} label="Watched" ring={accentObj.ring} />
               <MiniDiv />
               <MiniStat icon="⭐" n={stats.reviews} label="Reviews" ring={accentObj.ring} />
@@ -331,35 +331,35 @@ function ProfileInner() {
 
             {/* Now watching */}
             {showNowWatching && (
-              <div className="mt-3.5 rounded-[14px] p-3 flex items-center gap-3" style={{ background: 'linear-gradient(100deg,#e0457b,#a855f7)' }}>
-                <div className="rounded-[7px] flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ width: 32, height: 46, background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.25)' }}>
+              <div className="mt-5 rounded-[16px] p-4 flex items-center gap-4" style={{ background: 'linear-gradient(100deg,#e0457b,#a855f7)' }}>
+                <div className="rounded-[8px] flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ width: 40, height: 58, background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.25)' }}>
                   {nowWatchingPoster ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={nowWatchingPoster} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="cp-pop text-sm">🍿</span>
+                    <span className="cp-pop text-lg">🍿</span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="cp-live" />
-                    <span className="text-[8.5px] font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.9)' }}>Watching now</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.9)' }}>Watching now</span>
                   </div>
-                  <div className="text-[14.5px] font-bold text-white leading-tight truncate">{nowWatching}</div>
+                  <div className="text-[17px] font-bold text-white leading-tight truncate mt-0.5">{nowWatching}</div>
                 </div>
-                <span className="text-[9px] flex-shrink-0" style={{ color: 'rgba(255,255,255,0.7)' }}>{daysAgoLabel(nowStartedAt)}</span>
+                <span className="text-[11px] flex-shrink-0" style={{ color: 'rgba(255,255,255,0.7)' }}>{daysAgoLabel(nowStartedAt)}</span>
               </div>
             )}
 
             {/* Genres */}
             {genres.length > 0 && (
-              <div className="mt-3.5">
-                <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-2">Genres</div>
-                <div className="flex flex-wrap gap-1.5">
+              <div className="mt-5">
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2.5">Genres</div>
+                <div className="flex flex-wrap gap-2">
                   {genres.map(name => {
                     const g = genreByName(name)
                     return (
-                      <span key={name} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold"
+                      <span key={name} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[13px] font-semibold"
                         style={g ? { background: g.bg, color: g.text } : undefined}>
                         {g ? `${g.emoji} ` : ''}{name}
                       </span>
@@ -371,22 +371,22 @@ function ProfileInner() {
 
             {/* If I had to pick — 2-col grid */}
             {hasAnyPick && (
-              <div className="mt-3.5">
-                <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-2">If I had to pick…</div>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="mt-5">
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2.5">If I had to pick…</div>
+                <div className="grid grid-cols-2 gap-4">
                   {PICK_SLOTS.filter(s => picks[s.key]).map(s => {
                     const p = picks[s.key]
                     return (
-                      <div key={s.key} className="flex gap-2 items-center min-w-0">
-                        <div className="rounded-md flex-shrink-0 flex items-center justify-center bg-rose-50 overflow-hidden" style={{ width: 32, height: 46 }}>
+                      <div key={s.key} className="flex gap-2.5 items-center min-w-0">
+                        <div className="rounded-md flex-shrink-0 flex items-center justify-center bg-rose-50 overflow-hidden" style={{ width: 40, height: 58 }}>
                           {p.poster ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={p.poster} alt={p.title} className="w-full h-full object-cover" />
-                          ) : <span className="text-sm">{s.emoji}</span>}
+                          ) : <span className="text-lg">{s.emoji}</span>}
                         </div>
                         <div className="min-w-0">
-                          <div className="text-[8.5px] uppercase tracking-wide text-rose-400 font-bold leading-tight">{s.short}</div>
-                          <div className="text-[12.5px] font-semibold text-gray-800 leading-tight truncate">{p.title}</div>
+                          <div className="text-[9.5px] uppercase tracking-wide text-rose-400 font-bold leading-tight">{s.short}</div>
+                          <div className="text-[13.5px] font-semibold text-gray-800 leading-tight truncate mt-0.5">{p.title}</div>
                         </div>
                       </div>
                     )
@@ -586,9 +586,9 @@ function ProfileInner() {
 function MiniStat({ icon, n, label, ring }: { icon: string; n: number | string; label: string; ring: string }) {
   return (
     <div className="text-center flex-1 min-w-0">
-      <div className="text-[13px] leading-none">{icon}</div>
-      {n !== '' && <div className="text-[15px] font-bold leading-none mt-1" style={{ color: ring }}>{n}</div>}
-      <div className="text-[8px] uppercase tracking-wide text-gray-400 font-semibold mt-1">{label}</div>
+      <div className="text-[15px] leading-none">{icon}</div>
+      {n !== '' && <div className="text-[18px] font-bold leading-none mt-1.5" style={{ color: ring }}>{n}</div>}
+      <div className="text-[9px] uppercase tracking-wide text-gray-400 font-semibold mt-1.5">{label}</div>
     </div>
   )
 }
