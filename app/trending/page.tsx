@@ -13,12 +13,14 @@ import {
 import { Film, Tv, Plus, Check, TrendingUp, Clapperboard } from "lucide-react";
 import { clsx } from "clsx";
 import RequireAuth from "@/components/auth/RequireAuth";
+import { useCircle } from "@/components/auth/CircleProvider";
 
 type Tab = "movie" | "tv";
 
 const VISIBLE = 10; // how many to show at once
 
 function TrendingInner() {
+  const { activeCircle } = useCircle();
   const [tab, setTab] = useState<Tab>("movie");
   const [movies, setMovies] = useState<TrendingItem[]>([]);
   const [shows, setShows] = useState<TrendingItem[]>([]);
@@ -38,6 +40,7 @@ function TrendingInner() {
   }, []);
 
   async function addToWatchlist(item: TrendingItem) {
+    if (!activeCircle) return;
     // Show the tick immediately
     setJustAdded(item.id);
 
@@ -45,6 +48,7 @@ function TrendingInner() {
       title: item.title,
       type: item.type,
       added_by: who,
+      circle_id: activeCircle.id,
       poster: item.poster,
       plot: item.overview,
       year: item.year,
@@ -96,6 +100,11 @@ function TrendingInner() {
           <p className="text-sm text-gray-300">
             This week&apos;s top 10 — straight from the box office 🍿
           </p>
+          {activeCircle && (
+            <p className="text-xs text-rose-300 mt-2">
+              Adding to {activeCircle.emoji} {activeCircle.name}
+            </p>
+          )}
         </div>
       </div>
 
