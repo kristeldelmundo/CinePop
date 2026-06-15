@@ -1,26 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { Link2, Download, Check, X, Loader2 } from 'lucide-react'
-import { toPng } from 'html-to-image'
+import { Link2, Check, X } from 'lucide-react'
 
-// A small modal with two actions: copy the public link, and download the
-// profile card as a PNG. `cardRef` points at the node to snapshot.
+// A small modal to share the public profile link.
+// (Downloadable card image is coming back later — it needs a dependency
+// added the right way so the production build stays healthy.)
 export default function ShareProfileModal({
   open,
   onClose,
   shareUrl,
-  cardRef,
-  fileBaseName,
 }: {
   open: boolean
   onClose: () => void
   shareUrl: string
-  cardRef: React.RefObject<HTMLElement>
-  fileBaseName: string
+  cardRef?: React.RefObject<HTMLElement>
+  fileBaseName?: string
 }) {
   const [copied, setCopied] = useState(false)
-  const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   if (!open) return null
@@ -33,30 +30,6 @@ export default function ShareProfileModal({
       setTimeout(() => setCopied(false), 1800)
     } catch {
       setError('Could not copy — long-press the link to copy it.')
-    }
-  }
-
-  async function downloadCard() {
-    if (!cardRef.current) return
-    setError(null)
-    setDownloading(true)
-    try {
-      const dataUrl = await toPng(cardRef.current, {
-        pixelRatio: 2,
-        cacheBust: true,
-        // Give the PNG a soft CinePop backdrop so the frosted card has context.
-        backgroundColor: '#fdeef5',
-        style: { margin: '0' },
-      })
-      const link = document.createElement('a')
-      const safe = (fileBaseName || 'cinepop').replace(/[^a-z0-9-_]+/gi, '-').toLowerCase()
-      link.download = `cinepop-${safe}.png`
-      link.href = dataUrl
-      link.click()
-    } catch {
-      setError('Could not make the image — try again, or just share the link.')
-    } finally {
-      setDownloading(false)
     }
   }
 
@@ -83,19 +56,10 @@ export default function ShareProfileModal({
 
         <button
           onClick={copyLink}
-          className="w-full flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium py-3 rounded-xl text-sm transition-all mb-2.5"
+          className="w-full flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium py-3 rounded-xl text-sm transition-all"
         >
           {copied ? <Check size={16} /> : <Link2 size={16} />}
           {copied ? 'Link copied!' : 'Copy link'}
-        </button>
-
-        <button
-          onClick={downloadCard}
-          disabled={downloading}
-          className="w-full flex items-center justify-center gap-2 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 disabled:opacity-60 font-medium py-3 rounded-xl text-sm transition-all"
-        >
-          {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-          {downloading ? 'Making your card…' : 'Download card image'}
         </button>
 
         {error && <p className="text-xs text-red-500 mt-3 text-center">{error}</p>}
