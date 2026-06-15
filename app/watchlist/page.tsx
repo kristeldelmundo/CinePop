@@ -226,7 +226,7 @@ function WatchlistInner() {
 
         <AddMovieForm onAdd={handleAdd} addingAs={myName} />
 
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
+        <div className="flex flex-wrap items-center gap-2 mb-6 pb-1">
           <Filter size={14} className="text-gray-400 flex-shrink-0" />
           {filters.map((f) => (
             <button
