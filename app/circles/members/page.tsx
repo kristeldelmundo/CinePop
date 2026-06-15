@@ -69,7 +69,7 @@ function MembersInner() {
                   return (
                     <Link
                       key={m.user_id}
-                      href={`/u/${m.user_id}`}
+                      href={`/@${m.user_id}`}
                       className="w-full glass rounded-2xl p-3.5 flex items-center gap-3 text-left transition-all hover:shadow-md hover:shadow-rose-50"
                     >
                       {m.profile?.avatar_url ? (
