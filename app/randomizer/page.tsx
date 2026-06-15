@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import { WatchlistItem } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { fetchTrailerUrl } from "@/lib/tmdb";
+import { getCircleMembers } from "@/lib/circles";
 import {
   Shuffle,
   CheckCircle,
@@ -20,8 +21,6 @@ import { clsx } from "clsx";
 import Popcorn from "@/components/ui/Popcorn";
 import RequireAuth from "@/components/auth/RequireAuth";
 import { useCircle } from "@/components/auth/CircleProvider";
-
-type Filter = "all" | "movie" | "tv" | "Kristel" | "Eric";
 
 const COOKING_MESSAGES = [
   "Heating up the kettle...",
@@ -40,6 +39,11 @@ const KERNELS = [
   { x: "20px", delay: "0.75s", size: 38 },
 ];
 
+interface MemberLite {
+  user_id: string;
+  name: string;
+}
+
 function youtubeSearchUrl(title: string, year?: string | null) {
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(
     `${title} ${year || ""} trailer`,
@@ -50,9 +54,11 @@ function RandomizerInner() {
   const router = useRouter();
   const { activeCircle } = useCircle();
   const [items, setItems] = useState<WatchlistItem[]>([]);
+  const [members, setMembers] = useState<MemberLite[]>([]);
   const [pick, setPick] = useState<WatchlistItem | null>(null);
   const [spinning, setSpinning] = useState(false);
-  const [filter, setFilter] = useState<Filter>("all");
+  // "all" | "movie" | "tv" | "member:<user_id>"
+  const [filter, setFilter] = useState<string>("all");
   const [picked, setPicked] = useState(false);
   const [msgIdx, setMsgIdx] = useState(0);
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
@@ -71,9 +77,24 @@ function RandomizerInner() {
     if (data) setItems(data);
   }, [activeCircle]);
 
+  const loadMembers = useCallback(async () => {
+    if (!activeCircle) {
+      setMembers([]);
+      return;
+    }
+    const m = await getCircleMembers(activeCircle.id);
+    setMembers(
+      m.map((x) => ({
+        user_id: x.user_id,
+        name: x.profile?.display_name || "Member",
+      })),
+    );
+  }, [activeCircle]);
+
   useEffect(() => {
     loadItems();
-  }, [loadItems]);
+    loadMembers();
+  }, [loadItems, loadMembers]);
 
   useEffect(() => {
     if (!spinning) return;
@@ -87,8 +108,9 @@ function RandomizerInner() {
     return items.filter((i) => {
       if (filter === "movie") return i.type === "movie";
       if (filter === "tv") return i.type === "tv";
-      if (filter === "Kristel") return i.added_by === "Kristel";
-      if (filter === "Eric") return i.added_by === "Eric";
+      if (filter.startsWith("member:")) {
+        return i.added_by_id === filter.slice("member:".length);
+      }
       return true;
     });
   }
@@ -121,7 +143,6 @@ function RandomizerInner() {
 
   function openTrailer() {
     if (!pick) return;
-    // Use the found trailer, or fall back to a YouTube search
     const url = trailerUrl || youtubeSearchUrl(pick.title, pick.year);
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -138,12 +159,14 @@ function RandomizerInner() {
     setTrailerUrl(null);
   }
 
-  const filters: { value: Filter; label: string }[] = [
+  const filters: { value: string; label: string }[] = [
     { value: "all", label: "Any" },
     { value: "movie", label: "Movies only" },
     { value: "tv", label: "TV only" },
-    { value: "Kristel", label: "Kristel's picks" },
-    { value: "Eric", label: "Eric's picks" },
+    ...members.map((m) => ({
+      value: `member:${m.user_id}`,
+      label: `${m.name}'s picks`,
+    })),
   ];
 
   const pool = getPool();
@@ -278,19 +301,14 @@ function RandomizerInner() {
                     ★ {pick.rating}
                   </span>
                 )}
-                <span className="flex items-center gap-1">
-                  <span
-                    className={clsx(
-                      "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold",
-                      pick.added_by === "Kristel"
-                        ? "bg-rose-100 text-rose-500"
-                        : "bg-purple-100 text-purple-500",
-                    )}
-                  >
-                    {pick.added_by.charAt(0)}
+                {pick.added_by && (
+                  <span className="flex items-center gap-1">
+                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold bg-rose-100 text-rose-500">
+                      {pick.added_by.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="text-xs text-gray-400">{pick.added_by}</span>
                   </span>
-                  <span className="text-xs text-gray-400">{pick.added_by}</span>
-                </span>
+                )}
               </div>
 
               {pick.plot && (
