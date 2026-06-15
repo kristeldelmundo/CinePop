@@ -7,6 +7,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'image.tmdb.org' },
     ],
   },
+  async rewrites() {
+    return [
+      // Pretty share links: /@<id> -> the existing public profile route at /u/[id]
+      { source: '/@:id', destination: '/u/:id' },
+    ]
+  },
 }
 
 module.exports = nextConfig
