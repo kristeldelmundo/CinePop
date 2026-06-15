@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
-import MovieCard from "@/components/ui/MovieCard";
+import MoviePoster from "@/components/ui/MoviePoster";
+import MovieDetailModal from "@/components/ui/MovieDetailModal";
 import AddMovieForm from "@/components/ui/AddMovieForm";
 import Onboarding from "@/components/ui/Onboarding";
 import { WatchlistItem, MediaType } from "@/types";
@@ -40,6 +41,7 @@ function WatchlistInner() {
   const [filter, setFilter] = useState<string>("all");
   const [subtitleIdx, setSubtitleIdx] = useState(0);
   const [members, setMembers] = useState<MemberLite[]>([]);
+  const [openItem, setOpenItem] = useState<WatchlistItem | null>(null);
 
   const myName =
     profile?.display_name || user?.email?.split("@")[0] || "Me";
@@ -190,7 +192,7 @@ function WatchlistInner() {
           <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
             A circle is your shared movie group. Create one for you and your
             partner, family, or friends — then everyone can add to the same
-            watchlist.
+            library.
           </p>
           <Link
             href="/circles"
@@ -203,11 +205,45 @@ function WatchlistInner() {
     );
   }
 
+  // A reusable grid section for a media type
+  const gridSection = (
+    label: string,
+    icon: React.ReactNode,
+    list: WatchlistItem[],
+    pillClass: string,
+  ) =>
+    list.length > 0 && (
+      <section className="mb-8">
+        <div className="flex items-center gap-2 mb-3">
+          {icon}
+          <h2 className="font-medium text-gray-600 text-sm">{label}</h2>
+          <span className={clsx("text-xs px-2 py-0.5 rounded-full", pillClass)}>
+            {list.length}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+          {list.map((item) => (
+            <MoviePoster key={item.id} item={item} onOpen={setOpenItem} />
+          ))}
+        </div>
+      </section>
+    );
+
   return (
     <>
       <Onboarding />
       <Navbar />
-      <main className="max-w-2xl mx-auto px-4 py-8">
+
+      {openItem && (
+        <MovieDetailModal
+          item={openItem}
+          onClose={() => setOpenItem(null)}
+          onDelete={handleDelete}
+          onMarkWatched={handleMarkWatched}
+        />
+      )}
+
+      <main className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="font-display text-4xl font-bold text-gray-800 mb-1">
             What&apos;s <span className="gradient-text italic">Popping?</span>{" "}
@@ -245,45 +281,31 @@ function WatchlistInner() {
         </div>
 
         {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 rounded-2xl shimmer" />
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div key={i} className="aspect-[2/3] rounded-xl shimmer" />
             ))}
           </div>
         ) : (
           <>
-            {movies.length > 0 && (
-              <section className="mb-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <Film size={16} className="text-rose-400" />
-                  <h2 className="font-medium text-gray-600 text-sm">Movies</h2>
-                  <span className="bg-rose-100 text-rose-500 text-xs px-2 py-0.5 rounded-full">{movies.length}</span>
-                </div>
-                <div className="space-y-2">
-                  {movies.map((item) => (
-                    <MovieCard key={item.id} item={item} onDelete={handleDelete} onMarkWatched={handleMarkWatched} />
-                  ))}
-                </div>
-              </section>
+            {gridSection(
+              "Movies",
+              <Film size={16} className="text-rose-400" />,
+              movies,
+              "bg-rose-100 text-rose-500",
             )}
-            {tvShows.length > 0 && (
-              <section className="mb-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <Tv size={16} className="text-purple-400" />
-                  <h2 className="font-medium text-gray-600 text-sm">TV Shows</h2>
-                  <span className="bg-purple-100 text-purple-500 text-xs px-2 py-0.5 rounded-full">{tvShows.length}</span>
-                </div>
-                <div className="space-y-2">
-                  {tvShows.map((item) => (
-                    <MovieCard key={item.id} item={item} onDelete={handleDelete} onMarkWatched={handleMarkWatched} />
-                  ))}
-                </div>
-              </section>
+            {gridSection(
+              "TV Shows",
+              <Tv size={16} className="text-purple-400" />,
+              tvShows,
+              "bg-purple-100 text-purple-500",
             )}
             {filtered.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-4xl mb-3">🍿</p>
-                <p className="text-gray-400 text-sm">Nothing here yet — add your first title above!</p>
+                <p className="text-gray-400 text-sm">
+                  Nothing here yet — add your first title above!
+                </p>
               </div>
             )}
           </>
