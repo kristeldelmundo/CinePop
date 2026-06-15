@@ -1,19 +1,32 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import RequireAuth from '@/components/auth/RequireAuth'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { useCircle } from '@/components/auth/CircleProvider'
-import { createCircle, joinCircleByCode, getCircleMembers } from '@/lib/circles'
-import { Plus, Users, Check, LogIn, Loader2, Sparkles } from 'lucide-react'
+import {
+  createCircle,
+  joinCircleByCode,
+  getCircleMembers,
+  inviteLink,
+  searchUserByEmail,
+  addMemberByUserId,
+} from '@/lib/circles'
+import {
+  Plus, Users, Check, LogIn, Loader2, Sparkles, Copy, Link2, UserPlus, Search,
+} from 'lucide-react'
 import { clsx } from 'clsx'
 
 const EMOJI_CHOICES = ['🍿', '🎬', '❤️', '👨‍👩‍👧', '🎉', '🌙', '🛋️', '🥂']
 
+interface Member {
+  user_id: string
+  role: string
+  profile: { id: string; display_name: string | null; avatar_url: string | null; accent_color: string | null } | null
+}
+
 function CirclesInner() {
-  const router = useRouter()
   const { user } = useAuth()
   const { circles, activeCircle, setActiveCircle, refreshCircles, loading } = useCircle()
 
@@ -27,19 +40,35 @@ function CirclesInner() {
   const [joining, setJoining] = useState(false)
 
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({})
+  const [members, setMembers] = useState<Member[]>([])
+  const [copied, setCopied] = useState(false)
+
+  // Invite by email
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviting, setInviting] = useState(false)
+  const [inviteMsg, setInviteMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+
+  const loadMembers = useCallback(async () => {
+    if (!activeCircle) return
+    const m = await getCircleMembers(activeCircle.id)
+    setMembers(m as Member[])
+  }, [activeCircle])
 
   useEffect(() => {
-    // Load member counts for each circle
     async function loadCounts() {
       const counts: Record<string, number> = {}
       for (const c of circles) {
-        const members = await getCircleMembers(c.id)
-        counts[c.id] = members.length
+        const m = await getCircleMembers(c.id)
+        counts[c.id] = m.length
       }
       setMemberCounts(counts)
     }
     if (circles.length) loadCounts()
   }, [circles])
+
+  useEffect(() => {
+    loadMembers()
+  }, [loadMembers])
 
   async function handleCreate() {
     if (!newName.trim() || !user || busy) return
@@ -59,19 +88,57 @@ function CirclesInner() {
     setJoining(true)
     setJoinMsg(null)
     const result = await joinCircleByCode(joinCode, user.id)
-    if (result.circleId && !result.error) {
+    if (result.circleId) {
       const updated = await refreshCircles()
       const joined = updated.find((c) => c.id === result.circleId)
       if (joined) setActiveCircle(joined)
-      setJoinMsg({ kind: 'ok', text: 'Joined! 🍿' })
+      setJoinMsg({ kind: 'ok', text: result.error || 'Joined! 🍿' })
       setJoinCode('')
-    } else if (result.circleId && result.error) {
-      setJoinMsg({ kind: 'ok', text: result.error })
     } else {
       setJoinMsg({ kind: 'err', text: result.error || 'Could not join.' })
     }
     setJoining(false)
   }
+
+  async function copyInvite() {
+    if (!activeCircle) return
+    const link = inviteLink(activeCircle.invite_code)
+    await navigator.clipboard.writeText(link)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleInviteByEmail() {
+    if (!inviteEmail.trim() || !activeCircle || inviting) return
+    setInviting(true)
+    setInviteMsg(null)
+
+    const found = await searchUserByEmail(inviteEmail)
+    if (!found) {
+      setInviteMsg({
+        kind: 'err',
+        text: "No CinePop account with that email yet. Send them an invite link instead!",
+      })
+      setInviting(false)
+      return
+    }
+
+    const result = await addMemberByUserId(activeCircle.id, found.id)
+    if (result.ok) {
+      setInviteMsg({ kind: 'ok', text: `Added ${found.display_name || 'them'}! 🍿` })
+      setInviteEmail('')
+      loadMembers()
+    } else if (result.reason === 'already_member') {
+      setInviteMsg({ kind: 'ok', text: "They're already in this circle!" })
+    } else if (result.reason === 'not_owner') {
+      setInviteMsg({ kind: 'err', text: 'Only the circle owner can add members by email. Share the invite link instead!' })
+    } else {
+      setInviteMsg({ kind: 'err', text: 'Could not add them. Try the invite link.' })
+    }
+    setInviting(false)
+  }
+
+  const isOwner = activeCircle?.owner_id === user?.id
 
   return (
     <>
@@ -137,6 +204,101 @@ function CirclesInner() {
                 </div>
               )}
             </div>
+
+            {/* Active circle: invite + members panel */}
+            {activeCircle && (
+              <div className="glass rounded-2xl p-4 mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">{activeCircle.emoji}</span>
+                  <div>
+                    <h2 className="font-medium text-gray-800">{activeCircle.name}</h2>
+                    <p className="text-xs text-gray-400">Invite people to share this watchlist</p>
+                  </div>
+                </div>
+
+                {/* Invite link */}
+                <button
+                  onClick={copyInvite}
+                  className="w-full flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium py-2.5 rounded-xl text-sm transition-all mb-3"
+                >
+                  {copied ? <Check size={15} /> : <Link2 size={15} />}
+                  {copied ? 'Invite link copied!' : 'Copy invite link'}
+                </button>
+
+                {/* Invite by email (owner only) */}
+                {isOwner && (
+                  <div className="mb-3">
+                    <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+                      Add by email
+                    </label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
+                        <input
+                          value={inviteEmail}
+                          onChange={(e) => setInviteEmail(e.target.value)}
+                          placeholder="friend@email.com"
+                          className="w-full bg-white/80 border border-rose-100 rounded-xl pl-9 pr-3 py-2 text-sm outline-none focus:border-rose-300"
+                        />
+                      </div>
+                      <button
+                        onClick={handleInviteByEmail}
+                        disabled={!inviteEmail.trim() || inviting}
+                        className="flex items-center gap-1.5 bg-rose-500 hover:bg-rose-600 disabled:bg-rose-300 text-white font-medium px-3 rounded-xl text-sm transition-all"
+                      >
+                        {inviting ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
+                        Add
+                      </button>
+                    </div>
+                    {inviteMsg && (
+                      <p
+                        className={clsx(
+                          'text-xs mt-2 px-3 py-2 rounded-lg',
+                          inviteMsg.kind === 'ok' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-700',
+                        )}
+                      >
+                        {inviteMsg.text}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Member list */}
+                <label className="block text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+                  Members ({members.length})
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {members.map((m) => {
+                    const nm = m.profile?.display_name || 'Member'
+                    const isPurple = m.profile?.accent_color === 'purple'
+                    return (
+                      <div
+                        key={m.user_id}
+                        className="flex items-center gap-2 bg-white/70 border border-rose-100 rounded-full pl-1 pr-3 py-1"
+                      >
+                        {m.profile?.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.profile.avatar_url} alt={nm} className="w-6 h-6 rounded-full object-cover" />
+                        ) : (
+                          <span
+                            className={clsx(
+                              'w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold',
+                              isPurple ? 'bg-purple-100 text-purple-600' : 'bg-rose-100 text-rose-600',
+                            )}
+                          >
+                            {nm.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-600">{nm}</span>
+                        {m.role === 'owner' && (
+                          <span className="text-[10px] text-rose-400 font-medium">owner</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Create a circle */}
             {creating ? (
@@ -220,9 +382,7 @@ function CirclesInner() {
                 <p
                   className={clsx(
                     'text-xs mt-2 px-3 py-2 rounded-lg',
-                    joinMsg.kind === 'ok'
-                      ? 'bg-green-50 text-green-600'
-                      : 'bg-red-50 text-red-500',
+                    joinMsg.kind === 'ok' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500',
                   )}
                 >
                   {joinMsg.text}
