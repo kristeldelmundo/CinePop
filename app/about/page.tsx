@@ -9,8 +9,7 @@ import {
   Coffee, Heart, Send, Loader2, Check, Globe, Github, Instagram, Sparkles,
 } from 'lucide-react'
 
-// ⬇️ Only the Ko-fi handle is still a placeholder — swap it once your account is set up.
-const KOFI_URL = 'https://ko-fi.com/yourname' // ← replace with your real Ko-fi handle
+const KOFI_URL = 'https://ko-fi.com/kristeldelmundo'
 const PHOTO_URL =
   'https://lscjqfqpnquielxncybb.supabase.co/storage/v1/object/public/avatars/site/kristel.jpg'
 const SOCIALS = [
