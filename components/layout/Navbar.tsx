@@ -12,6 +12,7 @@ import {
   User as UserIcon,
   ChevronDown,
   Users,
+  HelpCircle,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -187,6 +188,13 @@ export default function Navbar() {
                     className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-rose-50 transition-colors"
                   >
                     <Users size={14} /> My Circles
+                  </Link>
+                  <Link
+                    href="/help"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-rose-50 transition-colors"
+                  >
+                    <HelpCircle size={14} /> Help
                   </Link>
                   <button
                     onClick={handleSignOut}
