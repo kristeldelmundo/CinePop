@@ -2,15 +2,31 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import RequireAuth from '@/components/auth/RequireAuth'
+import { useOnboarding } from '@/components/auth/OnboardingProvider'
 
-// Onboarding is now a modal (see components/onboarding/OnboardingModal.tsx),
-// triggered automatically by RequireAuth or via the "View onboarding" button
-// on /profile. This route is kept only to redirect anyone with an old link
-// or bookmark to /watchlist, where the modal will open as needed.
-export default function OnboardingRedirectPage() {
+// Onboarding now lives in a modal (components/onboarding/OnboardingModal.tsx),
+// triggered by RequireAuth on first login or via "View onboarding" on /profile.
+// This route exists only for old links/bookmarks pointing at /onboarding —
+// it opens the modal directly (rather than relying on a redirect target to
+// trigger it incidentally) and then sends the URL to /watchlist.
+function OnboardingRedirectInner() {
   const router = useRouter()
+  const { openOnboarding } = useOnboarding()
+
   useEffect(() => {
+    openOnboarding()
     router.replace('/watchlist')
-  }, [router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return null
+}
+
+export default function OnboardingRedirectPage() {
+  return (
+    <RequireAuth>
+      <OnboardingRedirectInner />
+    </RequireAuth>
+  )
 }
