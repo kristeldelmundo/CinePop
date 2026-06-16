@@ -69,16 +69,19 @@ function MembersInner() {
           <div className="glass rounded-2xl p-8 text-center">
             <Users size={32} className="mx-auto mb-3 text-rose-300" />
             <p className="text-gray-600 font-medium mb-1">No circle selected</p>
-            <p className="text-sm text-gray-400">Pick a circle first to see its members.</p>
+            <p className="text-sm text-gray-400">Pick a circle first to see your friends.</p>
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl">{activeCircle.emoji}</span>
-              <div>
-                <h1 className="font-display text-2xl font-bold text-gray-800 leading-tight">{activeCircle.name}</h1>
-                <p className="text-xs text-gray-400">{members.length} {members.length === 1 ? 'member' : 'members'} — tap to see their profile</p>
-              </div>
+            <div className="mb-6">
+              <h1 className="font-display text-3xl font-bold text-gray-800 leading-tight">
+                <span className="gradient-text italic">Friends</span> 🍿
+              </h1>
+              <p className="text-sm text-gray-400 mt-1 flex items-center gap-1.5">
+                <span>{activeCircle.emoji} {activeCircle.name}</span>
+                <span>·</span>
+                <span>{members.length} {members.length === 1 ? 'friend' : 'friends'} — tap to see their profile</span>
+              </p>
             </div>
 
             {loading ? (
