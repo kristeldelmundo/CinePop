@@ -33,17 +33,34 @@ function AboutInner() {
     if (!message.trim() || sending) return
     setSending(true)
     setError(null)
-    const { error: insErr } = await supabase.from('suggestions').insert({
+
+    const payload = {
       message: message.trim(),
       name: name.trim() || null,
       email: email.trim() || null,
+    }
+
+    // 1) Save to the suggestions table (the durable record / backup).
+    const { error: insErr } = await supabase.from('suggestions').insert({
+      ...payload,
       user_id: user?.id || null,
     })
-    setSending(false)
+
     if (insErr) {
+      setSending(false)
       setError('Hmm, that didn\u2019t go through. Please try again in a moment.')
       return
     }
+
+    // 2) Fire the email notification (fire-and-forget — a mail hiccup should
+    //    never block a successfully-saved suggestion).
+    try {
+      await supabase.functions.invoke('notify-suggestion', { body: payload })
+    } catch {
+      // ignore — it's already saved in the table
+    }
+
+    setSending(false)
     setSent(true)
     setName('')
     setEmail('')
