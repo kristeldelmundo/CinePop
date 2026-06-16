@@ -55,6 +55,11 @@ const SECTIONS: HelpSection[] = [
         q: 'How do I remove someone or leave a circle?',
         a: 'On My Circles, tap the small X next to a member to remove them (owners can\'t be removed). If you want to leave a circle yourself, use the "Leave this circle" button — circle owners can\'t leave their own circle.',
       },
+      {
+        id: 'circles-view-member-profile',
+        q: 'How do I view a friend\'s profile?',
+        a: 'On My Circles, tap any member\'s name or avatar in the member list — it opens their public profile (watched count, ratings, favorite genres, and more). You can also go straight there with cinepop.live/@theirusername if you know it.',
+      },
     ],
   },
   {
@@ -153,7 +158,7 @@ const SECTIONS: HelpSection[] = [
       {
         id: 'profile-replay-tour',
         q: 'Can I replay the welcome tour?',
-        a: 'Yes — on My Profile, tap "View onboarding" to replay the welcome wizard and the navbar walkthrough from the start.',
+        a: 'Yes — on My Profile, tap "Replay tour" (shown as "View onboarding" the first time) to replay the welcome wizard and the navbar walkthrough from the start.',
       },
     ],
   },
