@@ -6,7 +6,6 @@ import Navbar from "@/components/layout/Navbar";
 import MoviePoster from "@/components/ui/MoviePoster";
 import MovieDetailModal from "@/components/ui/MovieDetailModal";
 import AddMovieForm from "@/components/ui/AddMovieForm";
-import Onboarding from "@/components/ui/Onboarding";
 import { WatchlistItem, MediaType } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { fetchMovieInfo, fetchMovieById } from "@/lib/omdb";
@@ -182,7 +181,6 @@ function WatchlistInner() {
   if (!circlesLoading && !activeCircle) {
     return (
       <>
-        <Onboarding />
         <Navbar />
         <main className="max-w-2xl mx-auto px-4 py-16 text-center">
           <p className="text-5xl mb-4">🍿</p>
@@ -231,7 +229,6 @@ function WatchlistInner() {
 
   return (
     <>
-      <Onboarding />
       <Navbar />
 
       {openItem && (
