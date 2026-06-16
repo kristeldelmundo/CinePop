@@ -7,7 +7,7 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { useOnboarding } from '@/components/auth/OnboardingProvider'
 import type { CustomPickItem } from '@/components/auth/AuthProvider'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Check, Camera, Pencil, Image as ImageIcon, Plus, X, Share2, AtSign, Sparkles } from 'lucide-react'
+import { Loader2, Check, Camera, Pencil, Image as ImageIcon, Plus, X, Share2, AtSign, Sparkles, RotateCw } from 'lucide-react'
 import { clsx } from 'clsx'
 import { GENRES, genreByName, deriveViewerType, normalizeUsername, isValidUsername, isUsernameAvailable } from '@/lib/profile'
 import {
@@ -399,6 +399,11 @@ function ProfileInner() {
     ? (typeof window !== 'undefined' ? `${window.location.origin}/@${shareHandle}` : `https://cinepop.live/@${shareHandle}`)
     : ''
 
+  // First time through (never seen onboarding) gets the original framing;
+  // once it's been completed or skipped, the button becomes an explicit
+  // optional replay rather than something that still looks "to do."
+  const hasSeenOnboarding = profile?.onboarding_completed === true
+
   return (
     <div className="min-h-screen" style={bgStyle}>
       <Navbar />
@@ -423,8 +428,14 @@ function ProfileInner() {
                 title="Replay the welcome tour"
                 className="flex items-center gap-1.5 bg-white/80 hover:bg-white text-rose-600 text-sm font-semibold px-4 py-2 rounded-full transition-all shadow-sm disabled:opacity-60"
               >
-                {launchingOnboarding ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                <span className="hidden sm:inline">View onboarding</span>
+                {launchingOnboarding ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : hasSeenOnboarding ? (
+                  <RotateCw size={14} />
+                ) : (
+                  <Sparkles size={14} />
+                )}
+                <span className="hidden sm:inline">{hasSeenOnboarding ? 'Replay tour' : 'View onboarding'}</span>
               </button>
               <button
                 onClick={() => setShareOpen(true)}
