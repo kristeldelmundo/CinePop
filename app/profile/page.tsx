@@ -436,7 +436,7 @@ function ProfileInner() {
                 ) : (
                   <Sparkles size={14} />
                 )}
-                <span className="hidden sm:inline">{hasSeenOnboarding ? 'Replay tour' : 'View onboarding'}</span>
+                <span className="hidden sm:inline">{hasSeenOnboarding ? 'Replay tour' : 'Get Started'}</span>
               </button>
               <button
                 onClick={() => setShareOpen(true)}
