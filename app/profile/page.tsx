@@ -83,7 +83,7 @@ function ProfileInner() {
 
   const [stats, setStats] = useState<Stats>({ watched: 0, reviews: 0, avg: 0, topReaction: null })
 
-  // Replaying onboarding from the profile page.
+  // Replaying onboarding (+ tab tour) from the profile page.
   const [launchingOnboarding, setLaunchingOnboarding] = useState(false)
 
   // Index of the custom-pick slot whose CatalogPicker is open (lift z-index).
@@ -272,13 +272,19 @@ function ProfileInner() {
     setMode('view')
   }
 
-  // Re-run the onboarding wizard (modal) as if this were a brand-new account.
+  // Re-run the onboarding wizard (+ chained tab tour) as if this were a
+  // brand-new account — resets both completion flags so the full sequence
+  // (onboarding modal -> navbar spotlight tour) replays end to end.
   async function viewOnboarding() {
     if (!user || launchingOnboarding) return
     setLaunchingOnboarding(true)
     await supabase
       .from('profiles')
-      .update({ onboarding_completed: false, updated_at: new Date().toISOString() })
+      .update({
+        onboarding_completed: false,
+        tab_tour_completed: false,
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', user.id)
     await refreshProfile()
     setLaunchingOnboarding(false)
