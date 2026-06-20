@@ -8,9 +8,12 @@ import { clsx } from "clsx";
 interface Props {
   item: WatchlistItem;
   onOpen: (item: WatchlistItem) => void;
+  // Map of user_id -> avatar_url, supplied by the parent so we can show
+  // real profile photos instead of colored initials.
+  avatarMap?: Record<string, string | null>;
 }
 
-// Stable per-name color so each member's dot is consistent.
+// Stable per-name color so each member's dot is consistent when no avatar.
 const PALETTE = [
   { bg: "bg-rose-100", text: "text-rose-500" },
   { bg: "bg-purple-100", text: "text-purple-500" },
@@ -28,10 +31,12 @@ export function colorFor(name: string) {
   return PALETTE[Math.abs(hash) % PALETTE.length];
 }
 
-export default function MoviePoster({ item, onOpen }: Props) {
+export default function MoviePoster({ item, onOpen, avatarMap }: Props) {
   const addedBy = item.added_by || "Someone";
   const initial = addedBy.charAt(0).toUpperCase();
   const color = colorFor(addedBy);
+  // Prefer a real photo from the avatar map; fall back to the initial dot.
+  const avatarUrl = item.added_by_id ? avatarMap?.[item.added_by_id] : null;
 
   return (
     <button
@@ -90,17 +95,27 @@ export default function MoviePoster({ item, onOpen }: Props) {
           </div>
         )}
 
-        {/* Added-by dot (bottom corner) */}
-        <span
-          className={clsx(
-            "absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ring-2 ring-white/70",
-            color.bg,
-            color.text,
-          )}
-          title={`${addedBy} added this`}
-        >
-          {initial}
-        </span>
+        {/* Added-by dot — photo if available, colored initial otherwise */}
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt={addedBy}
+            title={`${addedBy} added this`}
+            className="absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full object-cover ring-2 ring-white/80 shadow"
+          />
+        ) : (
+          <span
+            className={clsx(
+              "absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ring-2 ring-white/70",
+              color.bg,
+              color.text,
+            )}
+            title={`${addedBy} added this`}
+          >
+            {initial}
+          </span>
+        )}
       </div>
 
       {/* Title + year under the poster */}
