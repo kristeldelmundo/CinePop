@@ -77,10 +77,7 @@ export default function HomePage() {
         </div>
         <div className="flex items-center gap-2">
           {user ? (
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 bg-white/80 border border-rose-100 rounded-full px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-gray-500 hover:border-rose-300 transition-colors"
-            >
+            <Link href="/profile" className="flex items-center gap-2 bg-white/80 border border-rose-100 rounded-full px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-gray-500 hover:border-rose-300 transition-colors">
               {profile?.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={profile.avatar_url} alt={name || 'You'} className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover" />
@@ -101,12 +98,7 @@ export default function HomePage() {
 
       {/* ── SLIDE AREA ──────────────────────────────────────────────── */}
       <div className="flex-1 relative overflow-hidden">
-        {/* On mobile: vertically centered. On desktop: shifted up with pt */}
-        <div className={clsx(
-          'absolute inset-0 flex flex-col items-center text-center px-5 sm:px-8',
-          'justify-center sm:justify-start sm:pt-16',
-          animating ? 'slide-out' : 'slide-in'
-        )}>
+        <div className={clsx('absolute inset-0 flex flex-col items-center justify-center text-center px-5 sm:px-8', animating ? 'slide-out' : 'slide-in')}>
 
           {/* ── SLIDE 1: HERO ── */}
           {cur === 0 && (
@@ -119,7 +111,6 @@ export default function HomePage() {
                 <span className="not-italic" style={{ WebkitTextFillColor: 'initial' }}>🍿</span>
               </h1>
               <p className="pop d3 text-sm sm:text-base text-rose-400 font-medium italic mb-2 sm:mb-3">Pop something on tonight 🍿</p>
-              {/* Gray body text — smaller on desktop too */}
               <p className="pop d4 text-sm text-gray-500 max-w-xs sm:max-w-md leading-relaxed mb-6 sm:mb-8">
                 Add movies and shows, let fate decide what you watch, then rate and share the experience together.
               </p>
