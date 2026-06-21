@@ -12,6 +12,8 @@ import {
 const KOFI_URL = 'https://ko-fi.com/kristeldelmundo'
 const PHOTO_URL =
   'https://lscjqfqpnquielxncybb.supabase.co/storage/v1/object/public/avatars/site/kristel.jpg'
+const THEO_URL =
+  'https://lscjqfqpnquielxncybb.supabase.co/storage/v1/object/public/avatars/site/theo.jpg'
 const SOCIALS = [
   { label: 'Portfolio', href: 'https://kristeldelmundo.vercel.app', icon: Globe },
   { label: 'Instagram', href: 'https://www.instagram.com/kristeldelmundo/', icon: Instagram },
@@ -40,7 +42,6 @@ function AboutInner() {
       email: email.trim(),
     }
 
-    // 1) Save to the suggestions table (the durable record / backup).
     const { error: insErr } = await supabase.from('suggestions').insert({
       ...payload,
       user_id: user?.id || null,
@@ -52,7 +53,6 @@ function AboutInner() {
       return
     }
 
-    // 2) Fire the email notification + auto-reply via Resend.
     try {
       await supabase.functions.invoke('notify-suggestion', { body: payload })
     } catch {
@@ -72,14 +72,24 @@ function AboutInner() {
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Hero */}
         <div className="text-center mb-8">
-          <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden shadow-lg ring-2 ring-white">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={PHOTO_URL}
-              alt="Kristel"
-              className="w-full h-full object-cover"
-            />
+          {/* Kristel + Theo side by side */}
+          <div className="flex items-end justify-center gap-4 mb-4">
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg ring-2 ring-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={PHOTO_URL} alt="Kristel" className="w-full h-full object-cover" />
+              </div>
+              <span className="text-[11px] text-gray-400 font-medium">Kristel 👩‍💻</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5 mb-1">
+              <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg ring-2 ring-rose-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={THEO_URL} alt="Theo the cat" className="w-full h-full object-cover" />
+              </div>
+              <span className="text-[11px] text-gray-400 font-medium">Theo 🐾</span>
+            </div>
           </div>
+
           <h1 className="font-display text-3xl font-bold text-gray-800 mb-2">
             Hi, I&apos;m <span className="gradient-text italic">Kristel</span> 🍿
           </h1>
@@ -102,7 +112,7 @@ function AboutInner() {
               So one night I hopped on Claude and just… made it happen. It grew into something more — circles, profiles, a randomizer for when we really can&apos;t decide, and a place to remember what we loved (and what made us cry). I&apos;m still building it, one cozy feature at a time.
             </p>
             <p>
-              Thanks for being here. It means a lot — from me, my boyfriend, and our adorable cat Theo. 🐈‍⬛
+              Thanks for being here. It means a lot — from me, my boyfriend, and our adorable kitten Theo. 🐈‍⬛
             </p>
           </div>
         </section>
@@ -217,7 +227,7 @@ function AboutInner() {
         {/* Footer */}
         <div className="text-center mt-8 mb-4">
           <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
-            Made with <Heart size={11} className="text-rose-400 fill-rose-400" /> by Kristel · CinePop {new Date().getFullYear()}
+            Made with <Heart size={11} className="text-rose-400 fill-rose-400" /> by Kristel & Theo · CinePop {new Date().getFullYear()}
           </p>
           <Link
             href="/"
