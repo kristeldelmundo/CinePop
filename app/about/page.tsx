@@ -33,10 +33,7 @@ function Lightbox({ src, alt, caption, onClose }: LightboxProps) {
       className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
       onClick={onClose}
     >
-      <div
-        className="relative max-w-sm w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
           className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-500 hover:text-rose-500 transition-colors"
@@ -45,11 +42,7 @@ function Lightbox({ src, alt, caption, onClose }: LightboxProps) {
           <X size={16} />
         </button>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt}
-          className="w-full rounded-3xl shadow-2xl shadow-black/40 object-cover"
-        />
+        <img src={src} alt={alt} className="w-full rounded-3xl shadow-2xl shadow-black/40 object-cover" />
         <p className="text-center text-white/80 text-sm mt-3 font-medium">{caption}</p>
       </div>
     </div>
@@ -58,9 +51,7 @@ function Lightbox({ src, alt, caption, onClose }: LightboxProps) {
 
 function AboutInner() {
   const { user } = useAuth()
-
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; caption: string } | null>(null)
-
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
@@ -144,7 +135,7 @@ function AboutInner() {
             </div>
           </div>
 
-          <h1 className="font-display text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
             Hi, I&apos;m <span className="gradient-text italic">Kristel</span> 🍿
           </h1>
           <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
@@ -153,12 +144,12 @@ function AboutInner() {
         </div>
 
         {/* The story */}
-        <section className="glass rounded-2xl p-6 mb-4">
+        <section className="glass rounded-2xl p-5 sm:p-6 mb-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">✨</span>
-            <h2 className="font-display text-lg font-bold text-gray-800">The story</h2>
+            <h2 className="font-display text-base sm:text-lg font-bold text-gray-800">The story</h2>
           </div>
-          <div className="space-y-3 text-[14px] text-gray-600 leading-relaxed">
+          <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
             <p>
               CinePop started as a tiny side project: a shared watchlist for me and my boyfriend, who love movies and shows but could <em>never</em> decide what to put on. No more &quot;I don&apos;t know, what do <em>you</em> want to watch?&quot; loops.
             </p>
@@ -172,12 +163,12 @@ function AboutInner() {
         </section>
 
         {/* Made by */}
-        <section className="glass rounded-2xl p-6 mb-4">
+        <section className="glass rounded-2xl p-5 sm:p-6 mb-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">👩‍💻</span>
-            <h2 className="font-display text-lg font-bold text-gray-800">Made by me</h2>
+            <h2 className="font-display text-base sm:text-lg font-bold text-gray-800">Made by me</h2>
           </div>
-          <p className="text-[14px] text-gray-600 leading-relaxed mb-4">
+          <p className="text-sm text-gray-600 leading-relaxed mb-4">
             CinePop is one of my passion projects — something I made for me and the people I love watching with. You can find more of my work here:
           </p>
           <div className="flex flex-wrap gap-2">
@@ -196,12 +187,12 @@ function AboutInner() {
         </section>
 
         {/* Support — Ko-fi */}
-        <section className="glass rounded-2xl p-6 mb-4 text-center">
+        <section className="glass rounded-2xl p-5 sm:p-6 mb-4 text-center">
           <div className="text-3xl mb-2">☕</div>
-          <h2 className="font-display text-lg font-bold text-gray-800 mb-1">
+          <h2 className="font-display text-base sm:text-lg font-bold text-gray-800 mb-1">
             Enjoying CinePop?
           </h2>
-          <p className="text-[14px] text-gray-500 leading-relaxed max-w-sm mx-auto mb-4">
+          <p className="text-sm text-gray-500 leading-relaxed max-w-sm mx-auto mb-4">
             CinePop is free and made with love. No pressure at all — but if it&apos;s saved you from a movie-night standoff, you can support the project (and Theo&apos;s treats 🐾) with a little coffee. 💕
           </p>
           <a
@@ -215,12 +206,12 @@ function AboutInner() {
         </section>
 
         {/* Suggestion box */}
-        <section className="glass rounded-2xl p-6 mb-4">
+        <section className="glass rounded-2xl p-5 sm:p-6 mb-4">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xl">💡</span>
-            <h2 className="font-display text-lg font-bold text-gray-800">Suggestion box</h2>
+            <h2 className="font-display text-base sm:text-lg font-bold text-gray-800">Suggestion box</h2>
           </div>
-          <p className="text-[13px] text-gray-500 leading-relaxed mb-4">
+          <p className="text-sm text-gray-500 leading-relaxed mb-4">
             Got an idea, a bug, or a feature you&apos;d love? Tell me — I read every one. Drop your email and I&apos;ll write back personally. 💌
           </p>
 
@@ -231,10 +222,7 @@ function AboutInner() {
               </div>
               <p className="font-medium text-gray-800 mb-1">Thank you! 🍿</p>
               <p className="text-sm text-gray-500 mb-4">Your idea landed safely in my inbox — check your email for a note back from me. 💕</p>
-              <button
-                onClick={() => setSent(false)}
-                className="text-sm text-rose-500 hover:text-rose-600 font-medium"
-              >
+              <button onClick={() => setSent(false)} className="text-sm text-rose-500 hover:text-rose-600 font-medium">
                 Send another
               </button>
             </div>
@@ -246,7 +234,7 @@ function AboutInner() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name (optional)"
-                  className="flex-1 bg-white/90 border border-rose-100 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rose-300"
+                  className="w-full sm:flex-1 bg-white/90 border border-rose-100 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rose-300"
                 />
                 <input
                   value={email}
@@ -254,7 +242,7 @@ function AboutInner() {
                   type="email"
                   placeholder="Your email *"
                   required
-                  className="flex-1 bg-white/90 border border-rose-100 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rose-300"
+                  className="w-full sm:flex-1 bg-white/90 border border-rose-100 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rose-300"
                 />
               </div>
               <textarea
@@ -284,10 +272,7 @@ function AboutInner() {
           <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
             Made with <Heart size={11} className="text-rose-400 fill-rose-400" /> by Kristel & Theo · CinePop {new Date().getFullYear()}
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-rose-500 hover:text-rose-600 text-sm font-medium mt-3"
-          >
+          <Link href="/" className="inline-flex items-center gap-1.5 text-rose-500 hover:text-rose-600 text-sm font-medium mt-3">
             <Sparkles size={14} /> Back to CinePop
           </Link>
         </div>
