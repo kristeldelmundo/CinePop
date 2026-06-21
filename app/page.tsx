@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Film, Shuffle, Star, Heart, Sparkles, ChevronLeft, ChevronRight, Users, Coffee } from 'lucide-react'
+import { Film, Shuffle, Heart, Sparkles, ChevronLeft, ChevronRight, Coffee } from 'lucide-react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { clsx } from 'clsx'
 
@@ -55,22 +55,22 @@ export default function HomePage() {
   })
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-gradient-to-br from-rose-50 via-purple-50 to-sky-50">
+    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-rose-50 via-purple-50 to-sky-50">
       <style>{`
         @keyframes pop-in{0%{opacity:0;transform:translateY(12px) scale(0.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
         @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
         .pop{animation:pop-in 0.45s cubic-bezier(0.34,1.3,0.64,1) both}
         .d1{animation-delay:0.04s}.d2{animation-delay:0.1s}.d3{animation-delay:0.17s}.d4{animation-delay:0.24s}.d5{animation-delay:0.31s}
         .bob{animation:bob 3s ease-in-out infinite}
-        .slide-out{opacity:0;transform:translateY(6px);transition:all 0.25s ease}
-        .slide-in{opacity:1;transform:translateY(0);transition:all 0.3s ease}
+        .fade-out{opacity:0;transition:opacity 0.25s ease}
+        .fade-in{opacity:1;transition:opacity 0.3s ease}
         .dot{width:6px;height:6px;border-radius:50%;background:rgba(244,63,94,0.2);transition:all 0.3s;cursor:pointer;}
         .dot.active{width:18px;border-radius:4px;background:#f43f5e;}
         .glass{background:rgba(255,255,255,0.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.85);}
       `}</style>
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
-      <nav className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 max-w-5xl mx-auto w-full flex-shrink-0">
+      <nav className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 max-w-5xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <span className="text-xl sm:text-2xl bob inline-block">🍿</span>
           <span className="font-display text-lg sm:text-xl font-medium text-rose-600 italic">CinePop</span>
@@ -89,16 +89,23 @@ export default function HomePage() {
               <span className="ml-0.5 max-w-[80px] truncate">{name}</span>
             </Link>
           ) : (
-            <Link href="/login" className="flex items-center gap-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full px-4 sm:px-5 py-1.5 text-xs sm:text-sm font-medium transition-colors">
+            <Link href="/login" className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-4 sm:px-5 py-1.5 text-xs sm:text-sm font-medium transition-colors">
               Log in
             </Link>
           )}
         </div>
       </nav>
 
-      {/* ── SLIDE AREA ──────────────────────────────────────────────── */}
-      <div className="flex-1 relative overflow-hidden">
-        <div className={clsx('absolute inset-0 flex flex-col items-center justify-center text-center px-5 sm:px-8', animating ? 'slide-out' : 'slide-in')}>
+      {/* ── SLIDE AREA — fills all remaining height ──────────────────── */}
+      <div className="flex-1 relative min-h-0">
+
+        {/* Slide wrapper — uses flex to truly center content in remaining space */}
+        <div
+          className={clsx(
+            'absolute inset-0 flex flex-col items-center justify-center text-center px-5 sm:px-8 pb-12',
+            animating ? 'fade-out' : 'fade-in'
+          )}
+        >
 
           {/* ── SLIDE 1: HERO ── */}
           {cur === 0 && (
@@ -110,7 +117,9 @@ export default function HomePage() {
                 <span className="gradient-text italic">CinePop</span>{' '}
                 <span className="not-italic" style={{ WebkitTextFillColor: 'initial' }}>🍿</span>
               </h1>
-              <p className="pop d3 text-sm sm:text-base text-rose-400 font-medium italic mb-2 sm:mb-3">Pop something on tonight 🍿</p>
+              <p className="pop d3 text-sm sm:text-base text-rose-400 font-medium italic mb-2 sm:mb-3">
+                Pop something on tonight 🍿
+              </p>
               <p className="pop d4 text-sm text-gray-500 max-w-xs sm:max-w-md leading-relaxed mb-6 sm:mb-8">
                 Add movies and shows, let fate decide what you watch, then rate and share the experience together.
               </p>
@@ -133,7 +142,7 @@ export default function HomePage() {
             <>
               <div className="pop d1 text-rose-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-1 sm:mb-2">How it works</div>
               <h2 className="pop d2 font-display text-2xl sm:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">Movie nights, upgraded ✨</h2>
-              <p className="pop d3 text-xs sm:text-sm text-gray-400 max-w-xs sm:max-w-sm mb-4 sm:mb-8">Everything you need for a perfect watch night, built in.</p>
+              <p className="pop d3 text-xs sm:text-sm text-gray-400 max-w-xs sm:max-w-sm mb-5 sm:mb-8">Everything you need for a perfect watch night, built in.</p>
               <div className="pop d4 grid grid-cols-3 gap-2 sm:gap-5 max-w-xs sm:max-w-2xl w-full">
                 {[
                   { emoji: '🍿', step: '01', title: 'Create a circle', desc: 'Invite your people. Everyone adds to one shared watchlist.' },
