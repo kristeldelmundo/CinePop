@@ -59,19 +59,17 @@ export default function HomePage() {
       <style>{`
         @keyframes pop-in{0%{opacity:0;transform:translateY(14px) scale(0.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
         @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-        @keyframes fade-in{0%{opacity:0}100%{opacity:1}}
         .pop{animation:pop-in 0.45s cubic-bezier(0.34,1.3,0.64,1) both}
         .d1{animation-delay:0.04s}.d2{animation-delay:0.1s}.d3{animation-delay:0.17s}.d4{animation-delay:0.24s}.d5{animation-delay:0.31s}
         .bob{animation:bob 3s ease-in-out infinite}
-        .fade{animation:fade-in 0.35s ease both}
-        .slide-out{opacity:0;transform:translateY(6px);transition:all 0.25s ease}
+        .slide-out{opacity:0;transform:translateY(8px);transition:all 0.25s ease}
         .slide-in{opacity:1;transform:translateY(0);transition:all 0.3s ease}
         .dot{width:7px;height:7px;border-radius:50%;background:rgba(244,63,94,0.2);transition:all 0.3s;cursor:pointer;}
         .dot.active{width:20px;border-radius:4px;background:#f43f5e;}
-        .glass{background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.8);}
+        .glass{background:rgba(255,255,255,0.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.85);}
       `}</style>
 
-      {/* ── NAVBAR (original style) ──────────────────────────────────── */}
+      {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto w-full flex-shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-2xl bob inline-block">🍿</span>
@@ -103,33 +101,31 @@ export default function HomePage() {
 
       {/* ── SLIDE AREA ──────────────────────────────────────────────── */}
       <div className="flex-1 relative overflow-hidden">
-
-        {/* Slide content */}
-        <div className={clsx('absolute inset-0 flex flex-col items-center justify-center text-center px-6', animating ? 'slide-out' : 'slide-in')}>
+        <div className={clsx('absolute inset-0 flex flex-col items-center justify-center text-center px-8', animating ? 'slide-out' : 'slide-in')}>
 
           {/* ── SLIDE 1: HERO ── */}
           {cur === 0 && (
             <>
-              <div className="pop d1 inline-flex items-center gap-2 bg-white/60 border border-rose-200 rounded-full px-4 py-1.5 text-sm text-rose-500 mb-5 font-medium">
+              <div className="pop d1 inline-flex items-center gap-2 bg-white/60 border border-rose-200 rounded-full px-4 py-1.5 text-sm text-rose-500 mb-6 font-medium">
                 <Heart size={13} fill="currentColor" /> your shared movie night app
               </div>
-              <h1 className="pop d2 font-display font-bold text-gray-800 leading-tight mb-3" style={{fontSize:'clamp(48px,9vw,80px)'}}>
+              <h1 className="pop d2 font-display font-bold text-gray-800 leading-tight mb-4" style={{ fontSize: 'clamp(52px,9vw,86px)' }}>
                 <span className="gradient-text italic">CinePop</span>
               </h1>
-              <p className="pop d3 text-base text-rose-400 font-medium italic mb-3">Pop something on tonight 🍿</p>
-              <p className="pop d4 text-lg text-gray-500 max-w-md leading-relaxed mb-8">
+              <p className="pop d3 text-lg text-rose-400 font-medium italic mb-3">Pop something on tonight 🍿</p>
+              <p className="pop d4 text-xl text-gray-500 max-w-lg leading-relaxed mb-10">
                 Add movies and shows, let fate decide what you watch, then rate and share the experience together.
               </p>
               <div className="pop d5 flex flex-col sm:flex-row gap-3">
-                <Link href="/watchlist" className="flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium px-8 py-3.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-rose-200">
+                <Link href="/watchlist" className="flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium px-8 py-3.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-rose-200 text-base">
                   <Film size={18} /> Browse Library
                 </Link>
-                <Link href="/randomizer" className="flex items-center justify-center gap-2 bg-white hover:bg-rose-50 text-rose-500 font-medium px-8 py-3.5 rounded-full border border-rose-200 transition-all hover:scale-105 shadow-sm">
+                <Link href="/randomizer" className="flex items-center justify-center gap-2 bg-white hover:bg-rose-50 text-rose-500 font-medium px-8 py-3.5 rounded-full border border-rose-200 transition-all hover:scale-105 shadow-sm text-base">
                   <Shuffle size={18} /> Pick Tonight&apos;s Watch
                 </Link>
               </div>
               {!user && (
-                <p className="pop mt-5 text-xs text-gray-400">Free forever · No ads · Made with 💕</p>
+                <p className="pop mt-5 text-sm text-gray-400">Free forever · No ads · Made with 💕</p>
               )}
             </>
           )}
@@ -138,21 +134,19 @@ export default function HomePage() {
           {cur === 1 && (
             <>
               <div className="pop d1 text-rose-400 text-xs font-bold uppercase tracking-widest mb-2">How it works</div>
-              <h2 className="pop d2 font-display text-3xl font-bold text-gray-800 mb-2">Movie nights, upgraded ✨</h2>
-              <p className="pop d3 text-sm text-gray-400 max-w-sm mb-8">Everything you need for a perfect watch night, built in.</p>
-              <div className="pop d4 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full">
+              <h2 className="pop d2 font-display text-4xl font-bold text-gray-800 mb-2">Movie nights, upgraded ✨</h2>
+              <p className="pop d3 text-base text-gray-400 max-w-sm mb-8">Everything you need for a perfect watch night, built in.</p>
+              <div className="pop d4 grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-2xl w-full">
                 {[
-                  { emoji: '🍿', icon: <Users size={16} />, step: '01', color: 'rose', title: 'Create a circle', desc: 'Invite your partner, family, or friends. Everyone adds to one shared watchlist — no more "send me your list."' },
-                  { emoji: '🎲', icon: <Shuffle size={16} />, step: '02', color: 'purple', title: 'Let fate decide', desc: 'Can\'t agree? Hit "Pick for us!" and CinePop randomly picks from your unwatched list, with a trailer to preview.' },
-                  { emoji: '⭐', icon: <Star size={16} />, step: '03', color: 'amber', title: 'Rate & remember', desc: 'After watching, rate it and react with emoji. Reviews live on your profile so you never forget what you loved.' },
+                  { emoji: '🍿', step: '01', title: 'Create a circle', desc: 'Invite your partner, family, or friends. Everyone adds to one shared watchlist — no more "send me your list."' },
+                  { emoji: '🎲', step: '02', title: 'Let fate decide', desc: 'Can\'t agree? Hit "Pick for us!" and CinePop randomly picks from your unwatched list, with a trailer to preview.' },
+                  { emoji: '⭐', step: '03', title: 'Rate & remember', desc: 'After watching, rate it and react with emoji. Reviews live on your profile so you never forget what you loved.' },
                 ].map((f) => (
-                  <div key={f.step} className="glass rounded-2xl p-5 text-left hover:-translate-y-1 transition-transform">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-[11px] font-bold text-gray-300">{f.step}</span>
-                      <span className="text-2xl">{f.emoji}</span>
-                    </div>
-                    <h3 className="font-semibold text-gray-800 text-sm mb-1.5">{f.title}</h3>
-                    <p className="text-xs text-gray-400 leading-relaxed">{f.desc}</p>
+                  <div key={f.step} className="glass rounded-2xl p-6 text-center hover:-translate-y-1 transition-transform flex flex-col items-center">
+                    <span className="text-[11px] font-bold text-gray-300 mb-1">{f.step}</span>
+                    <span className="text-3xl mb-3">{f.emoji}</span>
+                    <h3 className="font-bold text-gray-800 text-base mb-2">{f.title}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
                   </div>
                 ))}
               </div>
@@ -162,63 +156,63 @@ export default function HomePage() {
           {/* ── SLIDE 3: MADE BY ── */}
           {cur === 2 && (
             <>
-              <div className="pop d1 flex items-end justify-center gap-4 mb-5">
-                <div className="flex flex-col items-center gap-1.5">
+              <div className="pop d1 flex items-end justify-center gap-5 mb-6">
+                <div className="flex flex-col items-center gap-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={PHOTO_URL} alt="Kristel" className="w-20 h-20 rounded-full object-cover shadow-lg ring-2 ring-white" />
-                  <span className="text-[11px] text-gray-400 font-medium">Kristel 👩‍💻</span>
+                  <img src={PHOTO_URL} alt="Kristel" className="w-24 h-24 rounded-full object-cover shadow-lg ring-2 ring-white" />
+                  <span className="text-sm text-gray-400 font-medium">Kristel 👩‍💻</span>
                 </div>
-                <div className="flex flex-col items-center gap-1.5 mb-1">
+                <div className="flex flex-col items-center gap-2 mb-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={THEO_URL} alt="Theo" className="w-14 h-14 rounded-full object-cover shadow-lg ring-2 ring-rose-100" />
-                  <span className="text-[11px] text-gray-400 font-medium">Theo 🐾</span>
+                  <img src={THEO_URL} alt="Theo" className="w-16 h-16 rounded-full object-cover shadow-lg ring-2 ring-rose-100" />
+                  <span className="text-sm text-gray-400 font-medium">Theo 🐾</span>
                 </div>
               </div>
-              <h2 className="pop d2 font-display text-2xl font-bold text-gray-800 mb-2">Made with love, not VC money 💕</h2>
-              <p className="pop d3 text-sm text-gray-500 max-w-md leading-relaxed mb-2">
+              <h2 className="pop d2 font-display text-3xl font-bold text-gray-800 mb-3">Made with love, not VC money 💕</h2>
+              <p className="pop d3 text-base text-gray-500 max-w-lg leading-relaxed mb-2">
                 CinePop was built by Kristel — a developer who made this for her boyfriend and herself so they&apos;d never argue about what to watch again. It&apos;s free, ad-free, and built one cozy feature at a time.
               </p>
-              <p className="pop d3 text-sm text-gray-400 max-w-sm leading-relaxed mb-6">
+              <p className="pop d3 text-base text-gray-400 max-w-sm leading-relaxed mb-8">
                 Oh, and Theo (the kitten) supervised the whole thing. 🐈‍⬛
               </p>
               <div className="pop d4 flex flex-col sm:flex-row gap-3 items-center justify-center">
                 {!user ? (
-                  <Link href="/login" className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium px-8 py-3.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-rose-200">
+                  <Link href="/login" className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium px-8 py-3.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-rose-200 text-base">
                     <Sparkles size={18} /> Get started — it&apos;s free
                   </Link>
                 ) : (
-                  <Link href="/watchlist" className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium px-8 py-3.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-rose-200">
+                  <Link href="/watchlist" className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium px-8 py-3.5 rounded-full transition-all hover:scale-105 shadow-lg shadow-rose-200 text-base">
                     <Film size={18} /> Go to my library
                   </Link>
                 )}
-                <a href={KOFI_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white hover:bg-rose-50 text-rose-500 font-medium px-8 py-3.5 rounded-full border border-rose-200 transition-all hover:scale-105 shadow-sm">
+                <a href={KOFI_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white hover:bg-rose-50 text-rose-500 font-medium px-8 py-3.5 rounded-full border border-rose-200 transition-all hover:scale-105 shadow-sm text-base">
                   <Coffee size={18} /> Buy us a coffee
                 </a>
               </div>
-              <p className="pop d5 mt-4 text-xs text-gray-400 flex items-center gap-1">
+              <p className="pop d5 mt-5 text-sm text-gray-400 flex items-center gap-1">
                 Made with <Heart size={10} className="text-rose-400" fill="currentColor" /> · CinePop {new Date().getFullYear()}
               </p>
             </>
           )}
         </div>
 
-        {/* Prev / Next arrows */}
+        {/* Arrows */}
         <button
           onClick={() => go(-1)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center text-rose-400 hover:text-rose-600 transition-all hover:scale-110 bg-white/70 border border-rose-100 shadow-sm"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-rose-400 hover:text-rose-600 transition-all hover:scale-110 bg-white/70 border border-rose-100 shadow-sm"
           aria-label="Previous"
         >
-          <ChevronLeft size={18} />
+          <ChevronLeft size={20} />
         </button>
         <button
           onClick={() => go(1)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center text-rose-400 hover:text-rose-600 transition-all hover:scale-110 bg-white/70 border border-rose-100 shadow-sm"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-rose-400 hover:text-rose-600 transition-all hover:scale-110 bg-white/70 border border-rose-100 shadow-sm"
           aria-label="Next"
         >
-          <ChevronRight size={18} />
+          <ChevronRight size={20} />
         </button>
 
-        {/* Dot indicators */}
+        {/* Dots */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
           {Array.from({ length: TOTAL }).map((_, i) => (
             <button
