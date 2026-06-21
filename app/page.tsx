@@ -110,7 +110,8 @@ export default function HomePage() {
                 <Heart size={13} fill="currentColor" /> your shared movie night app
               </div>
               <h1 className="pop d2 font-display font-bold text-gray-800 leading-tight mb-4" style={{ fontSize: 'clamp(52px,9vw,86px)' }}>
-                <span className="gradient-text italic">CinePop</span>
+                <span className="gradient-text italic">CinePop</span>{' '}
+                <span className="not-italic" style={{ WebkitTextFillColor: 'initial' }}>🍿</span>
               </h1>
               <p className="pop d3 text-lg text-rose-400 font-medium italic mb-3">Pop something on tonight 🍿</p>
               <p className="pop d4 text-xl text-gray-500 max-w-lg leading-relaxed mb-10">
