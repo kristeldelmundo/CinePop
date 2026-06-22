@@ -27,6 +27,11 @@ const navItems = [
   { href: "/review", label: "Rate & Share", icon: Star, tourId: "tour-nav-review" },
 ];
 
+// Truncate circle name to a fixed character limit so the navbar stays stable
+function truncateName(name: string, limit = 10) {
+  return name.length > limit ? name.slice(0, limit) + "…" : name;
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -68,15 +73,17 @@ export default function Navbar() {
         {/* Center: circle switcher + nav tabs */}
         <div className="flex items-center gap-1 flex-1 justify-center min-w-0 px-1">
 
-          {/* Circle switcher — emoji + truncated name on all screen sizes */}
+          {/* Circle switcher — fixed width so it never shifts the nav */}
           {user && activeCircle && (
             <div className="relative flex-shrink-0" ref={circleRef} id="tour-nav-circle-switcher">
               <button
                 onClick={() => setCircleMenuOpen((o) => !o)}
-                className="flex items-center gap-1 px-2 py-1 rounded-full bg-rose-50 hover:bg-rose-100 transition-colors text-sm max-w-[110px] sm:max-w-[160px]"
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-rose-50 hover:bg-rose-100 transition-colors"
               >
-                <span className="flex-shrink-0">{activeCircle.emoji}</span>
-                <span className="truncate text-xs font-medium text-rose-600">{activeCircle.name}</span>
+                <span className="text-sm flex-shrink-0">{activeCircle.emoji}</span>
+                <span className="text-xs font-medium text-rose-600 whitespace-nowrap">
+                  {truncateName(activeCircle.name)}
+                </span>
                 <ChevronDown size={10} className="text-rose-400 flex-shrink-0" />
               </button>
 
