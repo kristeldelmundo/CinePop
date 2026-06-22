@@ -53,7 +53,7 @@ function youtubeSearchUrl(title: string, year?: string | null) {
   )}`;
 }
 
-// "Where to watch" search links
+// "Where to watch" search links — all verified to work in the Philippines
 function justwatchUrl(title: string) {
   return `https://www.justwatch.com/ph/search?q=${encodeURIComponent(title)}`;
 }
@@ -63,12 +63,11 @@ function tubiUrl(title: string) {
 function plexUrl(title: string) {
   return `https://www.plex.tv/search/?q=${encodeURIComponent(title)}`;
 }
-function crackleUrl(title: string) {
-  return `https://www.crackle.com/search?term=${encodeURIComponent(title)}`;
-}
-// Viu — works in PH, great for K-drama and Asian content
 function viuUrl(title: string) {
   return `https://www.viu.com/ott/ph/en-us/search?q=${encodeURIComponent(title)}`;
+}
+function iwanttfcUrl(title: string) {
+  return `https://iwanttfc.com/#!/search?q=${encodeURIComponent(title)}`;
 }
 
 function RandomizerInner() {
@@ -316,7 +315,7 @@ function RandomizerInner() {
                 {loadingTrailer ? "Watch Trailer (searching...)" : "Watch Trailer"}
               </button>
 
-              {/* Where to watch free */}
+              {/* Where to watch free — all PH-verified */}
               <div className="mt-1">
                 <p className="text-[11px] text-gray-400 uppercase tracking-wide font-semibold mb-2">
                   🎬 Where to watch free
@@ -347,24 +346,24 @@ function RandomizerInner() {
                     <Play size={12} /> Plex
                   </a>
                   <a
-                    href={crackleUrl(pick.title)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#ff6600] hover:bg-[#e05500] text-white transition-all hover:scale-105"
-                  >
-                    <Film size={12} /> Crackle
-                  </a>
-                  <a
                     href={viuUrl(pick.title)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#00c853] hover:bg-[#00a844] text-white transition-all hover:scale-105"
                   >
-                    <Tv size={12} /> Viu 🇵🇭
+                    <Tv size={12} /> Viu
+                  </a>
+                  <a
+                    href={iwanttfcUrl(pick.title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#0066cc] hover:bg-[#0052a3] text-white transition-all hover:scale-105"
+                  >
+                    <Film size={12} /> iWantTFC
                   </a>
                 </div>
                 <p className="text-[10px] text-gray-300 mt-2">
-                  availability varies by region · JustWatch shows all options in PH 🇵🇭
+                  availability varies · JustWatch shows all options in PH 🇵🇭
                 </p>
               </div>
             </div>
