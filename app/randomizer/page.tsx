@@ -53,7 +53,7 @@ function youtubeSearchUrl(title: string, year?: string | null) {
   )}`;
 }
 
-// "Where to watch" search links — opens the site pre-searched for the title.
+// "Where to watch" search links
 function justwatchUrl(title: string) {
   return `https://www.justwatch.com/ph/search?q=${encodeURIComponent(title)}`;
 }
@@ -62,6 +62,12 @@ function tubiUrl(title: string) {
 }
 function plexUrl(title: string) {
   return `https://www.plex.tv/search/?q=${encodeURIComponent(title)}`;
+}
+function crackleUrl(title: string) {
+  return `https://www.crackle.com/search?term=${encodeURIComponent(title)}`;
+}
+function popcornflixUrl(title: string) {
+  return `https://www.popcornflix.com/search?term=${encodeURIComponent(title)}`;
 }
 
 function RandomizerInner() {
@@ -218,7 +224,6 @@ function RandomizerInner() {
           "glass rounded-3xl p-8 mb-6 min-h-64 flex flex-col items-center justify-center transition-all relative overflow-hidden",
           picked && "shadow-xl shadow-rose-100",
         )}>
-          {/* Confetti burst */}
           {confetti && (
             <div className="pointer-events-none absolute inset-0 z-20">
               {Array.from({ length: 18 }).map((_, i) => (
@@ -310,7 +315,7 @@ function RandomizerInner() {
                 {loadingTrailer ? "Watch Trailer (searching...)" : "Watch Trailer"}
               </button>
 
-              {/* Where to watch — JustWatch, Tubi, Plex */}
+              {/* Where to watch free */}
               <div className="mt-1">
                 <p className="text-[11px] text-gray-400 uppercase tracking-wide font-semibold mb-2">
                   🎬 Where to watch free
@@ -339,6 +344,22 @@ function RandomizerInner() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#e5a00d] hover:bg-[#c98c00] text-black transition-all hover:scale-105"
                   >
                     <Play size={12} /> Plex
+                  </a>
+                  <a
+                    href={crackleUrl(pick.title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#ff6600] hover:bg-[#e05500] text-white transition-all hover:scale-105"
+                  >
+                    <Film size={12} /> Crackle
+                  </a>
+                  <a
+                    href={popcornflixUrl(pick.title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#e91e63] hover:bg-[#c2185b] text-white transition-all hover:scale-105"
+                  >
+                    🍿 Popcornflix
                   </a>
                 </div>
                 <p className="text-[10px] text-gray-300 mt-2">
