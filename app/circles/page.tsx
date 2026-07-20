@@ -22,6 +22,7 @@ import {
   Plus, Users, Check, LogIn, Loader2, Sparkles, Link2, UserPlus, Search, Pencil, X, LogOut, ChevronRight, ChevronDown, Share2, Heart,
 } from 'lucide-react'
 import { clsx } from 'clsx'
+import RecapSection from '@/components/circles/RecapSection'
 
 const EMOJI_CHOICES = ['🍿', '🎬', '❤️', '👨‍👩‍👧', '🎉', '🌙', '🛋️', '🥂']
 
@@ -654,6 +655,16 @@ function CirclesInner() {
                   </>
                 )}
               </div>
+            )}
+
+            {/* Shareable recap card — free advertising when posted to stories */}
+            {activeCircle && !editing && (
+              <RecapSection
+                circleId={activeCircle.id}
+                circleName={activeCircle.name}
+                circleEmoji={activeCircle.emoji}
+                memberCount={members.length}
+              />
             )}
 
             {/* Other circles — plain list items, tap to switch */}
