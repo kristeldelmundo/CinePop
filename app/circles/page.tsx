@@ -12,13 +12,14 @@ import {
   joinCircleByCode,
   getCircleMembers,
   inviteLink,
+  shareInvite,
   searchUserByEmail,
   inviteUserToCircle,
   leaveCircle,
   removeCircleMember,
 } from '@/lib/circles'
 import {
-  Plus, Users, Check, LogIn, Loader2, Sparkles, Link2, UserPlus, Search, Pencil, X, LogOut, ChevronRight, ChevronDown,
+  Plus, Users, Check, LogIn, Loader2, Sparkles, Link2, UserPlus, Search, Pencil, X, LogOut, ChevronRight, ChevronDown, Share2, Heart,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -119,6 +120,7 @@ function CirclesInner() {
   const [memberCounts, setMemberCounts] = useState<Record<string, number>>({})
   const [members, setMembers] = useState<Member[]>([])
   const [copied, setCopied] = useState(false)
+  const [shareMsg, setShareMsg] = useState<string | null>(null)
 
   // Invite by email
   const [inviteEmail, setInviteEmail] = useState('')
@@ -170,6 +172,7 @@ function CirclesInner() {
     setEditing(false)
     setManageMsg(null)
     setInviteMsg(null)
+    setShareMsg(null)
   }, [loadMembers])
 
   async function handleCreate() {
@@ -231,6 +234,28 @@ function CirclesInner() {
     await navigator.clipboard.writeText(link)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  // Native share sheet (mobile) with clipboard fallback — carries warm,
+  // pre-written copy so inviting is one tap.
+  async function handleShare() {
+    if (!activeCircle) return
+    setShareMsg(null)
+    const result = await shareInvite(
+      activeCircle.invite_code,
+      activeCircle.name,
+      activeCircle.emoji,
+    )
+    if (result === 'copied') {
+      setShareMsg('Invite copied — paste it to someone! 🍿')
+      setTimeout(() => setShareMsg(null), 3000)
+    } else if (result === 'failed') {
+      // Fall back to just copying the raw link.
+      await copyInvite()
+      setShareMsg('Invite link copied!')
+      setTimeout(() => setShareMsg(null), 3000)
+    }
+    // 'shared' and 'cancelled' need no message (the OS sheet handled it).
   }
 
   async function handleInviteByEmail() {
@@ -336,6 +361,8 @@ function CirclesInner() {
 
   const isOwner = activeCircle?.owner_id === user?.id
   const otherCircles = circles.filter((c) => c.id !== activeCircle?.id)
+  // A circle with just you in it is "lonely" — the moment to nudge inviting.
+  const isLonely = !!activeCircle && members.length <= 1
 
   return (
     <>
@@ -374,6 +401,28 @@ function CirclesInner() {
                 <p className="text-sm text-gray-400">
                   Create your first circle below to start building a shared watchlist.
                 </p>
+              </div>
+            )}
+
+            {/* Lonely-circle nudge — the growth moment. Shown when it's just you. */}
+            {activeCircle && isLonely && !editing && (
+              <div className="rounded-2xl p-5 mb-3 text-center bg-gradient-to-br from-rose-100 via-rose-50 to-purple-100 border border-rose-200 shadow-lg shadow-rose-100">
+                <div className="text-3xl mb-1.5">💌</div>
+                <h2 className="font-display text-lg font-bold text-gray-800 mb-1">
+                  Movie nights are better together
+                </h2>
+                <p className="text-[13px] text-gray-500 leading-relaxed max-w-xs mx-auto mb-4">
+                  It&apos;s just you in <span className="font-medium text-rose-500">{activeCircle.name}</span> so far. Invite your partner or a friend — that&apos;s when the fun (and the arguing 😏) begins.
+                </p>
+                <button
+                  onClick={handleShare}
+                  className="inline-flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold px-6 py-3 rounded-full transition-all hover:scale-105 shadow-md shadow-rose-200"
+                >
+                  <Share2 size={17} /> Invite someone
+                </button>
+                {shareMsg && (
+                  <p className="text-xs text-rose-500 mt-3 font-medium">{shareMsg}</p>
+                )}
               </div>
             )}
 
@@ -464,14 +513,26 @@ function CirclesInner() {
 
                 {!editing && (
                   <>
-                    {/* Invite link */}
-                    <button
-                      onClick={copyInvite}
-                      className="w-full flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium py-2.5 rounded-xl text-sm transition-all mb-3"
-                    >
-                      {copied ? <Check size={15} /> : <Link2 size={15} />}
-                      {copied ? 'Invite link copied!' : 'Copy invite link'}
-                    </button>
+                    {/* Invite actions — Share (native sheet) + Copy link */}
+                    <div className="flex gap-2 mb-3">
+                      <button
+                        onClick={handleShare}
+                        className="flex-1 flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-medium py-2.5 rounded-xl text-sm transition-all"
+                      >
+                        <Share2 size={15} /> Invite someone
+                      </button>
+                      <button
+                        onClick={copyInvite}
+                        className="flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium px-4 py-2.5 rounded-xl text-sm transition-all"
+                        title="Copy invite link"
+                      >
+                        {copied ? <Check size={15} /> : <Link2 size={15} />}
+                        <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy link'}</span>
+                      </button>
+                    </div>
+                    {shareMsg && !isLonely && (
+                      <p className="text-xs text-rose-500 mb-3 text-center font-medium">{shareMsg}</p>
+                    )}
 
                     {/* Invite by email (owner only) */}
                     {isOwner && (
