@@ -118,6 +118,47 @@ export function inviteLink(code: string): string {
   return `/join/${code}`
 }
 
+// Warm, pre-written share message for inviting someone to a circle.
+// Keeps the copy consistent everywhere we offer sharing.
+export function inviteShareText(circleName: string, circleEmoji: string): string {
+  return `${circleEmoji || '🍿'} Join my movie circle "${circleName}" on CinePop — let's stop arguing about what to watch and actually pick something!`
+}
+
+// Try the native share sheet (great on mobile), falling back to copying the
+// link to the clipboard. Returns how it was handled so the UI can react.
+// - 'shared'  : native share sheet completed
+// - 'copied'  : link copied to clipboard (fallback)
+// - 'cancelled': user dismissed the native sheet
+// - 'failed'  : nothing worked (UI should show the raw link)
+export async function shareInvite(
+  code: string,
+  circleName: string,
+  circleEmoji: string,
+): Promise<'shared' | 'copied' | 'cancelled' | 'failed'> {
+  const url = inviteLink(code)
+  const text = inviteShareText(circleName, circleEmoji)
+
+  // Native share (mobile browsers, some desktops).
+  if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+    try {
+      await navigator.share({ title: 'CinePop', text, url })
+      return 'shared'
+    } catch (err) {
+      // User cancelling the sheet throws — treat that distinctly.
+      if (err instanceof Error && err.name === 'AbortError') return 'cancelled'
+      // Otherwise fall through to clipboard.
+    }
+  }
+
+  // Clipboard fallback.
+  try {
+    await navigator.clipboard.writeText(`${text}\n${url}`)
+    return 'copied'
+  } catch {
+    return 'failed'
+  }
+}
+
 // localStorage key where the join page stashes an invite code when a
 // logged-out user opens an invite link. Consumed right after they log in.
 export const PENDING_INVITE_KEY = 'cinepop_pending_invite'
