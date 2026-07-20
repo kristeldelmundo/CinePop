@@ -274,3 +274,28 @@ export async function removeCircleMember(
   if (data === 'removed') return { ok: true }
   return { ok: false, reason: data as string }
 }
+
+// ----------------------------------------------------------------------------
+// Return hooks — "what's new since you were away"
+// ----------------------------------------------------------------------------
+
+export interface WhatsNew {
+  newTitles: number
+  newReviews: number
+}
+
+// How many titles/reviews others have added to a circle since I last caught up.
+// Excludes my own activity (server-side), so it's a true "while you were away".
+export async function getWhatsNew(circleId: string): Promise<WhatsNew> {
+  const { data, error } = await supabase.rpc('circle_whats_new', {
+    target_circle: circleId,
+  })
+  if (error || !data || data.length === 0) return { newTitles: 0, newReviews: 0 }
+  const row = data[0] as { new_titles: number; new_reviews: number }
+  return { newTitles: row.new_titles || 0, newReviews: row.new_reviews || 0 }
+}
+
+// Mark a circle as caught-up (call when the user has seen the activity).
+export async function markCircleSeen(circleId: string): Promise<void> {
+  await supabase.rpc('mark_circle_seen', { target_circle: circleId })
+}

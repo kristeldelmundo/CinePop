@@ -14,6 +14,7 @@ import { Film, Tv, Filter, Users } from "lucide-react";
 import { clsx } from "clsx";
 import RequireAuth from "@/components/auth/RequireAuth";
 import { useCircle } from "@/components/auth/CircleProvider";
+import WhatsNewBanner from "@/components/circles/WhatsNewBanner";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 // Result returned to the add form so it can show feedback
@@ -267,6 +268,8 @@ function WatchlistInner() {
             {SUBTITLES[subtitleIdx]}
           </p>
         </div>
+
+        <WhatsNewBanner />
 
         <AddMovieForm onAdd={handleAdd} addingAs={myName} />
 
