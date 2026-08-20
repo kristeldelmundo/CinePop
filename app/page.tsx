@@ -55,6 +55,29 @@ export default function HomePage() {
   })
 
   return (
+    <>
+      {/* Structured data (JSON-LD) so Google understands what CinePop is — enables richer search listings. */}
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
+            name: 'CinePop',
+            description: 'Pick, watch, and feel — your shared movie night app.',
+            url: 'https://cinepop.live',
+            applicationCategory: 'EntertainmentApplication',
+            operatingSystem: 'Any',
+            image: 'https://cinepop.live/opengraph-image.png',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
+            },
+          }),
+        }}
+      />
     <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-rose-50 via-purple-50 to-sky-50">
       <style>{`
         @keyframes pop-in{0%{opacity:0;transform:translateY(12px) scale(0.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
@@ -225,5 +248,6 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

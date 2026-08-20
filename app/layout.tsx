@@ -47,9 +47,28 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+// Site-wide structured data — gives Google a consistent identity for CinePop
+// (name, url, logo) across every page, independent of the homepage's
+// page-specific WebApplication JSON-LD.
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'CinePop',
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.png`,
+  description: DESCRIPTION,
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="grain min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-sky-50">
         <AuthProvider>
           <CircleProvider>
