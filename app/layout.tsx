@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { CircleProvider } from '@/components/auth/CircleProvider'
@@ -31,6 +31,20 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: ['/opengraph-image.png'],
   },
+  // "Add to Home Screen" polish on iOS Safari (Android reads app/manifest.ts).
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'CinePop',
+  },
+}
+
+// themeColor lives in a separate `viewport` export (Next.js 14 convention),
+// tinting the browser UI / iOS status bar to match the brand.
+export const viewport: Viewport = {
+  themeColor: '#f43f72',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
